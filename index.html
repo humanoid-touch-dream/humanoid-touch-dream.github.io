@@ -25,8 +25,8 @@
   </div>
 
   <div class="main-content">
-    <div class="hero-text">DreamTouch</div>
-    <div class="sub-hero-text">Learning Dexterous Humanoid Manipulation with Touch Dreaming</div>
+    <div class="hero-text">Humanoid DreamTouch</div>
+    <div class="sub-hero-text">Learning Versatile Humanoid Manipulation with Touch Dreaming</div>
 
     <!-- Add Authors -->
     <!-- <div class="authors">
@@ -110,10 +110,9 @@
     
     <div class="tagline" id="abstract">Abstract.</div>
     <div class="paper-section">
-      Learning from demonstrations across different embodiments is a very promising way for scaling up training data to achieve better generalizations.
-      Based on this insight, we introduce EgoX, an uniformed framework for cross-embodiment learning which enables different robots -- humanoid, locoman, roboticarm -- to learn from human videos.
-      In this work, we provide uniformed data collection and training pipelines for dexterous manipulation tasks, bridging the gap between different embodiments. 
-    </div> 
+      Humanoid robots promise general-purpose assistance, yet real-world humanoid loco-manipulation remains challenging because it requires <em>whole-body stability</em>, <em>dexterous hands</em>, and <em>contact-aware perception</em> under frequent contact changes.
+      In this work, we study <strong>dexterous, contact-rich humanoid loco-manipulation</strong>. We first develop an RL-based <strong>whole-body controller</strong> that provides stable lower-body and torso execution during complex manipulation. Built on this controller, we develop a <strong>whole-body humanoid data collection system</strong> that combines VR-based teleoperation with a unified reference frame for human-to-humanoid motion mapping, enabling efficient collection of real-world demonstrations. We then propose <strong>Humanoid Transformer with Touch Dreaming (HTD)</strong>, a multimodal encoder-decoder Transformer that treats touch as a first-class modality alongside multi-view vision and proprioception. HTD is trained with a single-stage behavioral cloning objective augmented with <em>touch dreaming</em>: in addition to predicting action chunks, the policy predicts future hand finger forces and future tactile <em>latents</em>, encouraging the shared Transformer trunk to learn contact-aware representations for dexterous interaction. Across five contact-rich tasks, <em>Insert-T</em>, <em>Book Organization</em>, <em>Towel Folding</em>, <em>Cat Litter Scooping</em>, and <em>Tea Serving</em>, our system enables versatile, high-dexterity humanoid manipulation in the real world.
+    </div>
 
     <!-- <div class="columns is-centered">  
       <div class="interpolation-panel"

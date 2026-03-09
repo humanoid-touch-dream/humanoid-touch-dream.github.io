@@ -1,6 +1,6 @@
 # videomimic-1.github.io
 
-This repository contains the source code for the VideoMimic website: https://videomimic.net/.
+This repository contains the source code for the Humanoid DreamTouch website: https://humanoid-dream-touch.github.io/.
 
 RUN:
 
