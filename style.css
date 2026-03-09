@@ -576,6 +576,14 @@ video.r2s-video-item {
   height: 220px; 
 } 
 
+/* Whole-body controller videos are 4:3; keep display in 4:3 to avoid side bars */
+#WBCGallerySection .gallery-video {
+  width: 298px;
+  height: 224px;
+  object-fit: cover;
+  background-color: transparent;
+}
+
 /* Styling for the caption and navigation controls container */
 .gallery-caption-container {
   max-width: 960px; /* Align container with main content */
