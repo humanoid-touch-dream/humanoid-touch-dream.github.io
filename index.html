@@ -17,6 +17,7 @@
     <hr>
     <ul>
       <li><a href="#abstract">Abstract</a></li>
+      <li><a href="#policies"> Autonomous Policies</a></li>
       <li><a href="#wbc"> Whole-Body Controllor</a></li>
       <!-- <li><a href="#retargeting">Motion Retargeting</a></li>
       <li><a href="#touchdreaming">Touch Drearming</a></li> -->
@@ -124,6 +125,28 @@
       In this work, we study <strong>dexterous, contact-rich humanoid loco-manipulation</strong>. We first develop an RL-based <strong>whole-body controller</strong> that provides stable lower-body and torso execution during complex manipulation. Built on this controller, we develop a <strong>whole-body humanoid data collection system</strong> that combines VR-based teleoperation with a unified reference frame for human-to-humanoid motion mapping, enabling efficient collection of real-world demonstrations. We then propose <strong>Humanoid Transformer with Touch Dreaming (HTD)</strong>, a multimodal encoder-decoder Transformer that treats touch as a first-class modality alongside multi-view vision and proprioception. HTD is trained with a single-stage behavioral cloning objective augmented with <em>touch dreaming</em>: in addition to predicting action chunks, the policy predicts future hand finger forces and future tactile <em>latents</em>, encouraging the shared Transformer trunk to learn contact-aware representations for dexterous interaction. Across five contact-rich tasks, <em>Insert-T</em>, <em>Book Organization</em>, <em>Towel Folding</em>, <em>Cat Litter Scooping</em>, and <em>Tea Serving</em>, our system enables versatile, high-dexterity humanoid manipulation in the real world.
     </div>
 
+    <div class="tagline" id="policies">Autonomous Policies</div>
+    <div class="video-gallery-section" id="AutonomousPoliciesGallerySection">
+      <div class="video-gallery-container">
+        <div class="video-gallery video-gallery-original-ratio" id="videoGalleryPolicies">
+          <video class="gallery-video" src="./videos/tea/tea1.mp4" autoplay muted playsinline loop></video>
+          <video class="gallery-video" src="./videos/tea/tea5.mp4" autoplay muted playsinline loop></video>
+          <video class="gallery-video" src="./videos/tea/tea3.mp4" autoplay muted playsinline loop></video>
+          <video class="gallery-video" src="./videos/tea/tea2.mp4" autoplay muted playsinline loop></video>
+          <video class="gallery-video" src="./videos/tea/tea4.mp4" autoplay muted playsinline loop></video>
+        </div>
+      </div>
+      <div class="gallery-caption-container">
+        <div class="gallery-nav-controls">
+          <button class="gallery-nav left" id="scrollLeftBtnPolicies">&lt;</button>
+          <button class="gallery-nav right" id="scrollRightBtnPolicies">&gt;</button>
+        </div>
+        <p class="figure-caption gallery-caption">
+          <b>Autonomous policy for tea serving. All videos are played at original speed (1X).</b>
+        </p>
+      </div>
+    </div>
+
     <!-- <div class="columns is-centered">  
       <div class="interpolation-panel"
         style="width: 1280px; height: 340px; background-color: #fff4cf; margin: 0 auto; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
@@ -140,11 +163,9 @@
     </p> -->
 
     <div class="tagline" id="wbc">Whole-Body Controller</div>
-
-    
     <div class="video-gallery-section" id="WBCGallerySection">
       <div class="video-gallery-container">
-        <div class="video-gallery" id="videoGalleryHumanoid">
+        <div class="video-gallery" id="videoGalleryWBC">
           <video class="gallery-video" src="./videos/wbc_dancing1.mp4" autoplay muted playsinline loop></video>
           <video class="gallery-video" src="./videos/wbc_squat1.mp4" autoplay muted playsinline loop></video>
           <video class="gallery-video" src="./videos/wbc_walk1.mp4" autoplay muted playsinline loop></video>
@@ -298,8 +319,14 @@
     document.addEventListener('DOMContentLoaded', function() {
       const galleries = [
         {
+          sectionId: 'AutonomousPoliciesGallerySection',
+          galleryInnerId: 'videoGalleryPolicies',
+          scrollLeftBtnId: 'scrollLeftBtnPolicies',
+          scrollRightBtnId: 'scrollRightBtnPolicies'
+        },
+        {
           sectionId: 'WBCGallerySection', 
-          galleryInnerId: 'videoGalleryHumanoid',
+          galleryInnerId: 'videoGalleryWBC',
           scrollLeftBtnId: 'scrollLeftBtnHumanoid',
           scrollRightBtnId: 'scrollRightBtnHumanoid'
         },

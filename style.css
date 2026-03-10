@@ -584,6 +584,14 @@ video.r2s-video-item {
   background-color: transparent;
 }
 
+/* Autonomous policy videos keep their native aspect ratios */
+#AutonomousPoliciesGallerySection .gallery-video {
+  width: auto;
+  height: 224px;
+  object-fit: contain;
+  background-color: transparent;
+}
+
 /* Styling for the caption and navigation controls container */
 .gallery-caption-container {
   max-width: 960px; /* Align container with main content */
