@@ -126,9 +126,9 @@
     </div>
 
     <div class="tagline" id="policies">Autonomous Policies</div>
-    <div class="video-gallery-section" id="AutonomousPoliciesGallerySection">
+    <div class="video-gallery-section" id="InsertTGallerySection">
       <div class="video-gallery-container">
-        <div class="video-gallery video-gallery-original-ratio" id="videoGalleryPolicies">
+        <div class="video-gallery video-gallery-original-ratio" id="videoGalleryInsertT">
           <video class="gallery-video" src="./videos/insert_t/insert_t_right_10_suc.mp4" autoplay muted playsinline loop></video>
           <video class="gallery-video" src="./videos/insert_t/insert_t_right_fast3.mp4" autoplay muted playsinline loop></video>
           <video class="gallery-video" src="./videos/insert_t/insert_t_left1.mp4" autoplay muted playsinline loop></video>
@@ -141,8 +141,8 @@
       </div>
       <div class="gallery-caption-container">
         <div class="gallery-nav-controls">
-          <button class="gallery-nav left" id="scrollLeftBtnPolicies">&lt;</button>
-          <button class="gallery-nav right" id="scrollRightBtnPolicies">&gt;</button>
+          <button class="gallery-nav left" id="scrollLeftBtnInsertT">&lt;</button>
+          <button class="gallery-nav right" id="scrollRightBtnInsertT">&gt;</button>
         </div>
         <p class="figure-caption gallery-caption">
           <b>Policy rollouts for insert-t. All videos are played at original speed (1X) unless otherwise noted.</b>
@@ -150,9 +150,9 @@
       </div>
     </div>
 
-    <div class="video-gallery-section" id="AutonomousPoliciesGallerySection">
+    <div class="video-gallery-section" id="TeaGallerySection">
       <div class="video-gallery-container">
-        <div class="video-gallery video-gallery-original-ratio" id="videoGalleryPolicies">
+        <div class="video-gallery video-gallery-original-ratio" id="videoGalleryTea">
           <video class="gallery-video" src="./videos/tea/tea1.mp4" autoplay muted playsinline loop></video>
           <video class="gallery-video" src="./videos/tea/tea5.mp4" autoplay muted playsinline loop></video>
           <video class="gallery-video" src="./videos/tea/tea3.mp4" autoplay muted playsinline loop></video>
@@ -162,8 +162,8 @@
       </div>
       <div class="gallery-caption-container">
         <div class="gallery-nav-controls">
-          <button class="gallery-nav left" id="scrollLeftBtnPolicies">&lt;</button>
-          <button class="gallery-nav right" id="scrollRightBtnPolicies">&gt;</button>
+          <button class="gallery-nav left" id="scrollLeftBtnTea">&lt;</button>
+          <button class="gallery-nav right" id="scrollRightBtnTea">&gt;</button>
         </div>
         <p class="figure-caption gallery-caption">
           <b>Policy rollouts for tea serving. All videos are played at original speed (1X).</b>
@@ -343,10 +343,16 @@
     document.addEventListener('DOMContentLoaded', function() {
       const galleries = [
         {
-          sectionId: 'AutonomousPoliciesGallerySection',
-          galleryInnerId: 'videoGalleryPolicies',
-          scrollLeftBtnId: 'scrollLeftBtnPolicies',
-          scrollRightBtnId: 'scrollRightBtnPolicies'
+          sectionId: 'InsertTGallerySection',
+          galleryInnerId: 'videoGalleryInsertT',
+          scrollLeftBtnId: 'scrollLeftBtnInsertT',
+          scrollRightBtnId: 'scrollRightBtnInsertT'
+        },
+        {
+          sectionId: 'TeaGallerySection',
+          galleryInnerId: 'videoGalleryTea',
+          scrollLeftBtnId: 'scrollLeftBtnTea',
+          scrollRightBtnId: 'scrollRightBtnTea'
         },
         {
           sectionId: 'WBCGallerySection', 
