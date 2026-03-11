@@ -494,6 +494,8 @@
     }
     var CW_STOPS = [[0,59,76,192],[.25,141,176,254],[.5,221,221,221],[.75,246,154,113],[1,180,4,38]];
     function coolwarm(t) { return lerpCmap(CW_STOPS, t); }
+    var SOFT_STOPS = [[0,158,188,218],[.25,190,210,228],[.5,230,230,230],[.75,235,200,175],[1,215,150,120]];
+    function softDivMap(t) { return lerpCmap(SOFT_STOPS, t); }
     var REDS_STOPS = [[0,255,245,240],[.15,254,224,210],[.3,252,187,161],[.45,252,146,114],[.6,251,106,74],[.75,239,59,44],[.9,203,24,29],[1,103,0,13]];
     function redsMap(t) { return lerpCmap(REDS_STOPS, t); }
     var GREY_ORANGE_STOPS = [[0,200,200,200],[.25,210,190,170],[.5,220,170,120],[.75,230,140,60],[1,230,110,0]];
@@ -922,7 +924,7 @@
             } else {
               var dr = dimMax[idx] - dimMin[idx];
               var t = dr > 1e-8 ? (val - dimMin[idx]) / dr : 0.5;
-              var rgb = coolwarm(t);
+              var rgb = softDivMap(t);
               ctx.fillStyle = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
             }
             ctx.fillRect(x0 + c * cellSize, y0 + r * cellSize, cellSize - 0.5, cellSize - 0.5);
@@ -939,7 +941,7 @@
       var cbW = 12, cbH = gridSize;
       for (var i = 0; i < cbH; i++) {
         var t = 1 - i / cbH;
-        var rgb = coolwarm(t);
+        var rgb = softDivMap(t);
         ctx.fillStyle = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
         ctx.fillRect(cbX, startY + i, cbW, 1.5);
       }
