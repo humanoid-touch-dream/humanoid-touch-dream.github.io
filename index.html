@@ -778,10 +778,10 @@
       drawForceSide(0, 0, halfW, H, 'Left Hand', d.force.left_gt[f], d.force.left_pred[f]);
       drawForceSide(halfW, 0, halfW, H, 'Right Hand', d.force.right_gt[f], d.force.right_pred[f]);
 
-      ctx.fillStyle = '#5b9bd5'; ctx.fillRect(W/2 - 80, H - 16, 10, 10);
+      ctx.fillStyle = '#8fb8c9'; ctx.fillRect(W/2 - 80, H - 16, 10, 10);
       ctx.fillStyle = '#333'; ctx.font = '10px Roboto Mono'; ctx.textAlign = 'left';
       ctx.fillText('GT', W/2 - 66, H - 7);
-      ctx.fillStyle = '#ed7d31'; ctx.fillRect(W/2 + 10, H - 16, 10, 10);
+      ctx.fillStyle = '#d4a07a'; ctx.fillRect(W/2 + 10, H - 16, 10, 10);
       ctx.fillStyle = '#333'; ctx.fillText('Pred', W/2 + 24, H - 7);
     }
 
@@ -826,11 +826,11 @@
         var gtVal = gt[i], predVal = pred[i];
         var gtH = gtVal * yScale, predH = predVal * yScale;
 
-        ctx.fillStyle = '#5b9bd5';
+        ctx.fillStyle = '#8fb8c9';
         if (gtVal >= 0) ctx.fillRect(gx, zeroY - gtH, bW, gtH);
         else ctx.fillRect(gx, zeroY, bW, -gtH);
 
-        ctx.fillStyle = '#ed7d31';
+        ctx.fillStyle = '#d4a07a';
         if (predVal >= 0) ctx.fillRect(gx + bW + 1, zeroY - predH, bW, predH);
         else ctx.fillRect(gx + bW + 1, zeroY, bW, -predH);
 
