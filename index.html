@@ -18,6 +18,7 @@
     <ul>
       <li><a href="#abstract">Abstract</a></li>
       <li><a href="#policies"> Autonomous Policies</a></li>
+      <li><a href="#dreamtouch"> Touch Dreaming</a></li>
       <li><a href="#wbc"> Whole-Body Controllor</a></li>
       <!-- <li><a href="#retargeting">Motion Retargeting</a></li>
       <li><a href="#touchdreaming">Touch Drearming</a></li> -->
@@ -170,6 +171,68 @@
         </p>
       </div>
     </div>
+
+    <!-- ============ Touch Dreaming Interactive Visualization ============ -->
+    <div class="tagline" id="dreamtouch">Touch Dreaming Visualization</div>
+    <div class="paper-section" style="margin-bottom: 16px;">
+      Explore touch dreaming predictions interactively. The left panel shows
+      the robot's head camera view. The right panel visualizes predicted vs.
+      ground-truth touch signals&mdash;switch between <em>Force</em>,
+      <em>Latent Tactile</em>, and <em>Raw Tactile</em> modes.
+      For the latent tactile heatmaps, each latent dimension is independently
+      normalized over the episode, with a minimum-range threshold derived from the
+      most active dimension across all fingers to distinguish active from inactive
+      contact regions.
+    </div>
+
+    <div id="dt-root">
+      <!-- Top controls -->
+      <div id="dt-controls">
+        <label class="dt-label">Episode
+          <select id="dt-episode"></select>
+        </label>
+        <span id="dt-mode-badge"></span>
+        <div id="dt-tabs">
+          <button class="dt-tab dt-tab-active" data-mode="force">Force</button>
+          <button class="dt-tab" data-mode="latent">Latent Tactile</button>
+          <button class="dt-tab" data-mode="raw">Raw Tactile</button>
+        </div>
+        <span id="dt-finger-sel" style="display:none;">
+          <select id="dt-side">
+            <option value="right">Right</option>
+            <option value="left">Left</option>
+          </select>
+          <select id="dt-finger">
+            <option value="pinky">Pinky</option>
+            <option value="ring">Ring</option>
+            <option value="middle" selected>Middle</option>
+            <option value="index">Index</option>
+            <option value="thumb">Thumb</option>
+            <option value="palm">Palm</option>
+          </select>
+        </span>
+      </div>
+
+      <!-- Main area: cam + vis -->
+      <div id="dt-panels">
+        <div id="dt-cam-wrap">
+          <video id="dt-cam" muted preload="auto" playsinline></video>
+          <div id="dt-cam-loading">Loading video&hellip;</div>
+          <div id="dt-cam-label">Head Camera (Right Eye)</div>
+        </div>
+        <div id="dt-vis-wrap">
+          <canvas id="dt-vis"></canvas>
+        </div>
+      </div>
+
+      <!-- Playback controls -->
+      <div id="dt-playback">
+        <button id="dt-play" title="Play / Pause">&#9654;</button>
+        <input type="range" id="dt-slider" min="0" max="0" value="0" step="1">
+        <span id="dt-time">0:00 / 0:00</span>
+      </div>
+    </div>
+    <!-- ============ End Touch Dreaming ============ -->
 
     <!-- <div class="columns is-centered">  
       <div class="interpolation-panel"
@@ -398,6 +461,591 @@
         }
       });
     });
+  </script>
+
+  <!-- ============ Dream Touch Visualization JS ============ -->
+  <script>
+  (function() {
+    'use strict';
+
+    /* ---- Configuration: add your episodes here ---- */
+    const EPISODES = [
+      { id: 'insert_t_ep1', label: 'Insert-T Episode 1', path: 'dream_touch_data/insert_t_ep1' },
+      { id: 'insert_t_ep2', label: 'Insert-T Episode 2', path: 'dream_touch_data/insert_t_ep2' },
+    ];
+
+    /* ---- Colormaps ---- */
+    function lerpCmap(stops, t) {
+      t = Math.max(0, Math.min(1, t));
+      for (var i = 0; i < stops.length - 1; i++) {
+        if (t <= stops[i+1][0]) {
+          var s = (t - stops[i][0]) / (stops[i+1][0] - stops[i][0]);
+          return [
+            Math.round(stops[i][1] + s * (stops[i+1][1] - stops[i][1])),
+            Math.round(stops[i][2] + s * (stops[i+1][2] - stops[i][2])),
+            Math.round(stops[i][3] + s * (stops[i+1][3] - stops[i][3])),
+          ];
+        }
+      }
+      return [stops[stops.length-1][1], stops[stops.length-1][2], stops[stops.length-1][3]];
+    }
+    var CW_STOPS = [[0,59,76,192],[.25,141,176,254],[.5,221,221,221],[.75,246,154,113],[1,180,4,38]];
+    function coolwarm(t) { return lerpCmap(CW_STOPS, t); }
+    var REDS_STOPS = [[0,255,245,240],[.15,254,224,210],[.3,252,187,161],[.45,252,146,114],[.6,251,106,74],[.75,239,59,44],[.9,203,24,29],[1,103,0,13]];
+    function redsMap(t) { return lerpCmap(REDS_STOPS, t); }
+    var YLORD_STOPS = [[0,255,255,204],[.15,255,237,160],[.3,254,217,118],[.45,254,178,76],[.6,253,141,60],[.75,252,78,42],[.9,227,26,28],[1,177,0,38]];
+    function ylOrRdMap(t) { return lerpCmap(YLORD_STOPS, t); }
+
+    /* ---- Hand heatmap constants (ported from vis_dream_touch.py) ---- */
+    var HAND_H = 52, HAND_W = 58;
+    var REGION_SPECS = [
+      ['fingerone_tip_touch',9,3,3],['fingerone_top_touch',96,12,8],['fingerone_palm_touch',80,10,8],
+      ['fingertwo_tip_touch',9,3,3],['fingertwo_top_touch',96,12,8],['fingertwo_palm_touch',80,10,8],
+      ['fingerthree_tip_touch',9,3,3],['fingerthree_top_touch',96,12,8],['fingerthree_palm_touch',80,10,8],
+      ['fingerfour_tip_touch',9,3,3],['fingerfour_top_touch',96,12,8],['fingerfour_palm_touch',80,10,8],
+      ['fingerfive_tip_touch',9,3,3],['fingerfive_top_touch',96,12,8],
+      ['fingerfive_middle_touch',9,3,3],['fingerfive_palm_touch',96,12,8],
+      ['palm_touch',112,14,8]
+    ];
+    var R_LAYOUT = {
+      fingerfive_tip_touch:[17,2],fingerfive_top_touch:[22,4],fingerfive_middle_touch:[34,6],fingerfive_palm_touch:[38,6],
+      fingerfour_tip_touch:[2,15],fingerfour_top_touch:[6,13],fingerfour_palm_touch:[20,13],
+      fingerthree_tip_touch:[1,26],fingerthree_top_touch:[5,24],fingerthree_palm_touch:[20,24],
+      fingertwo_tip_touch:[2,37],fingertwo_top_touch:[6,35],fingertwo_palm_touch:[20,35],
+      fingerone_tip_touch:[2,48],fingerone_top_touch:[6,46],fingerone_palm_touch:[20,46],
+      palm_touch:[34,24]
+    };
+    var shapeMap = {};
+    REGION_SPECS.forEach(function(s){ shapeMap[s[0]] = [s[2], s[3]]; });
+    var L_LAYOUT = {};
+    for (var k in R_LAYOUT) {
+      var y=R_LAYOUT[k][0], x=R_LAYOUT[k][1], h=shapeMap[k][0], w=shapeMap[k][1];
+      if (k==='palm_touch'){var tmp=h;h=w;w=tmp;}
+      L_LAYOUT[k]=[y, HAND_W-x-w];
+    }
+
+    function drawHand(cx, ox, oy, availW, availH, flat, layout, vmin, vmax) {
+      var sc = Math.min(availW / HAND_W, availH / HAND_H);
+      var sx = ox + (availW - HAND_W * sc) / 2;
+      var sy = oy + (availH - HAND_H * sc) / 2;
+      cx.fillStyle = '#c7d1d9';
+      cx.fillRect(sx, sy, HAND_W * sc, HAND_H * sc);
+      var vr = vmax - vmin; if (vr <= 0) vr = 1;
+      var off = 0;
+      for (var ri = 0; ri < REGION_SPECS.length; ri++) {
+        var spec = REGION_SPECS[ri];
+        var key = spec[0], nv = spec[1], rows = spec[2], cols = spec[3];
+        var pos = layout[key];
+        var regionData = flat.slice(off, off + nv);
+        off += nv;
+        if (!pos) continue;
+        var py = pos[0], px = pos[1];
+        if (key === 'palm_touch') {
+          var tr = new Array(nv);
+          for (var r=0;r<rows;r++) for (var c=0;c<cols;c++) tr[c*rows+r]=regionData[r*cols+c];
+          var tRows=cols, tCols=rows;
+          var nH=Math.round(tRows*1.6), nW=Math.round(tCols*1.6);
+          var adjY=Math.round(py+0.5*(tRows-nH)), adjX=Math.round(px+0.5*(tCols-nW));
+          for (var r=0;r<nH;r++){var sR=Math.min(Math.round(r*tRows/nH),tRows-1);
+            for(var c=0;c<nW;c++){var sC=Math.min(Math.round(c*tCols/nW),tCols-1);
+              var v=tr[sR*tCols+sC]; var t=(v-vmin)/vr; var rgb=redsMap(t);
+              cx.fillStyle='rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')';
+              cx.fillRect(sx+(adjX+c)*sc, sy+(adjY+r)*sc, sc+.5, sc+.5);
+          }}
+        } else {
+          for (var r=0;r<rows;r++) for(var c=0;c<cols;c++){
+            var v=regionData[r*cols+c]; var t=(v-vmin)/vr; var rgb=redsMap(t);
+            cx.fillStyle='rgb('+rgb[0]+','+rgb[1]+','+rgb[2]+')';
+            cx.fillRect(sx+(px+c)*sc, sy+(py+r)*sc, sc+.5, sc+.5);
+          }
+        }
+      }
+    }
+
+    /* ---- State ---- */
+    const S = {
+      data: null, frame: 0, playing: false, mode: 'force',
+      side: 'right', finger: 'middle', animId: null, lastTime: 0,
+    };
+
+    /* ---- DOM refs ---- */
+    const elEpisode  = document.getElementById('dt-episode');
+    const elCam      = document.getElementById('dt-cam');
+    const elCanvas   = document.getElementById('dt-vis');
+    const elSlider   = document.getElementById('dt-slider');
+    const elPlay     = document.getElementById('dt-play');
+    const elTime     = document.getElementById('dt-time');
+    const elFinSel   = document.getElementById('dt-finger-sel');
+    const elSide     = document.getElementById('dt-side');
+    const elFinger   = document.getElementById('dt-finger');
+    const elLoading  = document.getElementById('dt-cam-loading');
+    const elBadge    = document.getElementById('dt-mode-badge');
+    const ctx        = elCanvas.getContext('2d');
+
+    /* ---- Helpers ---- */
+    function fmtTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = Math.floor(sec % 60);
+      return m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    function resizeCanvas() {
+      const wrap = document.getElementById('dt-vis-wrap');
+      const dpr = window.devicePixelRatio || 1;
+      elCanvas.width  = wrap.clientWidth * dpr;
+      elCanvas.height = wrap.clientHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    /* ---- Data loading ---- */
+    async function loadEpisode(ep) {
+      try {
+        const resp = await fetch(ep.path + '/data.json');
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        S.data = await resp.json();
+      } catch (e) {
+        console.warn('Failed to load data.json for', ep.id, e);
+        S.data = null;
+        renderPlaceholder('Data not found. Run export_dream_touch_web.py first.');
+        return;
+      }
+
+      S.videoReady = false;
+      elPlay.disabled = true;
+      elLoading.classList.remove('dt-hidden');
+      elLoading.textContent = 'Loading video\u2026';
+
+      function onVideoReady() {
+        if (S.videoReady) return;
+        S.videoReady = true;
+        elPlay.disabled = false;
+        elLoading.classList.add('dt-hidden');
+      }
+
+      elCam.oncanplay = onVideoReady;
+      elCam.src = ep.path + '/cam_right.mp4';
+      elCam.load();
+
+      setTimeout(function() {
+        if (elCam.readyState >= 3) onVideoReady();
+      }, 50);
+
+      elSlider.max = S.data.meta.totalFrames - 1;
+
+      var m = S.data.meta;
+      var hasTabs = {
+        force: m.hasForce,
+        latent: m.hasLatent,
+        raw: m.hasGtRaw || m.hasRawPred
+      };
+      document.querySelectorAll('.dt-tab').forEach(function(btn) {
+        var mode = btn.getAttribute('data-mode');
+        btn.style.display = hasTabs[mode] ? '' : 'none';
+        if (mode === 'raw') {
+          btn.textContent = m.hasRawPred ? 'Raw Tactile' : 'GT Tactile';
+        }
+      });
+
+      elBadge.textContent = m.mode === 'latent' ? 'Dream Latent Tactile' : m.mode === 'raw' ? 'Dream Raw Tactile' : m.mode;
+      elBadge.className = 'dt-badge-' + m.mode;
+
+      if (!hasTabs[S.mode]) {
+        S.mode = hasTabs.force ? 'force' : hasTabs.latent ? 'latent' : 'raw';
+        updateTabUI();
+      }
+
+      S._allFingerMaxDimRange = 0;
+      if (S.data.latent) {
+        var sides = ['left', 'right'];
+        var fingers = ['pinky', 'ring', 'middle', 'index', 'thumb', 'palm'];
+        for (var si = 0; si < sides.length; si++) {
+          for (var fi = 0; fi < fingers.length; fi++) {
+            var pk = sides[si] + '_' + fingers[fi] + '_pred';
+            var gk = sides[si] + '_' + fingers[fi] + '_gt';
+            var pA = S.data.latent[pk], gA = S.data.latent[gk];
+            if (!pA || !gA || pA.length === 0) continue;
+            var dd = pA[0].length;
+            for (var di = 0; di < dd; di++) {
+              var lo = Infinity, hi = -Infinity;
+              for (var fr = 0; fr < pA.length; fr++) {
+                if (pA[fr][di] < lo) lo = pA[fr][di];
+                if (pA[fr][di] > hi) hi = pA[fr][di];
+                if (gA[fr][di] < lo) lo = gA[fr][di];
+                if (gA[fr][di] > hi) hi = gA[fr][di];
+              }
+              var r = hi - lo;
+              if (r > S._allFingerMaxDimRange) S._allFingerMaxDimRange = r;
+            }
+          }
+        }
+      }
+
+      seekFrame(0);
+    }
+
+    /* ---- Seek to a specific data frame (used by slider / arrow keys) ---- */
+    function seekFrame(f) {
+      if (!S.data) return;
+      S.frame = Math.max(0, Math.min(f, S.data.meta.totalFrames - 1));
+      elSlider.value = S.frame;
+      updateTimeLabel();
+      elCam.currentTime = S.frame / S.data.meta.fps;
+      renderVis();
+    }
+
+    function updateTimeLabel() {
+      if (!S.data) return;
+      var t = S.frame / S.data.meta.fps;
+      var total = S.data.meta.totalFrames / S.data.meta.fps;
+      elTime.textContent = fmtTime(t) + ' / ' + fmtTime(total);
+    }
+
+    /* ---- Playback: use native video.play() and sync canvas from video clock ---- */
+    function togglePlay() {
+      if (!S.data) return;
+      S.playing = !S.playing;
+      elPlay.innerHTML = S.playing ? '&#9646;&#9646;' : '&#9654;';
+      if (S.playing) {
+        if (S.frame >= S.data.meta.totalFrames - 1) {
+          elCam.currentTime = 0;
+          S.frame = 0;
+        }
+        elCam.play().catch(function() {});
+        S.animId = requestAnimationFrame(syncFromVideo);
+      } else {
+        elCam.pause();
+        if (S.animId) cancelAnimationFrame(S.animId);
+      }
+    }
+
+    function syncFromVideo() {
+      if (!S.playing || !S.data) return;
+      var t = elCam.currentTime;
+      var frame = Math.min(Math.round(t * S.data.meta.fps), S.data.meta.totalFrames - 1);
+
+      if (frame !== S.frame) {
+        S.frame = frame;
+        elSlider.value = frame;
+        updateTimeLabel();
+        renderVis();
+      }
+
+      if (elCam.ended || frame >= S.data.meta.totalFrames - 1) {
+        S.playing = false;
+        elPlay.innerHTML = '&#9654;';
+        return;
+      }
+      S.animId = requestAnimationFrame(syncFromVideo);
+    }
+
+    /* ---- Rendering dispatcher ---- */
+    function renderVis() {
+      resizeCanvas();
+      const w = elCanvas.width / (window.devicePixelRatio || 1);
+      const h = elCanvas.height / (window.devicePixelRatio || 1);
+      ctx.clearRect(0, 0, w, h);
+
+      if (!S.data) { renderPlaceholder('No data loaded'); return; }
+      switch (S.mode) {
+        case 'force':  renderForce(w, h); break;
+        case 'latent': renderLatent(w, h); break;
+        case 'raw':    renderRaw(w, h); break;
+      }
+    }
+
+    function renderPlaceholder(msg) {
+      resizeCanvas();
+      const w = elCanvas.width / (window.devicePixelRatio || 1);
+      const h = elCanvas.height / (window.devicePixelRatio || 1);
+      ctx.fillStyle = '#999';
+      ctx.font = '13px Roboto Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(msg, w/2, h/2);
+    }
+
+    /* ---- Force bar chart ---- */
+    function renderForce(W, H) {
+      const d = S.data, f = S.frame;
+      if (!d.force) return;
+      const halfW = W / 2;
+      drawForceSide(0, 0, halfW, H, 'Left Hand', d.force.left_gt[f], d.force.left_pred[f]);
+      drawForceSide(halfW, 0, halfW, H, 'Right Hand', d.force.right_gt[f], d.force.right_pred[f]);
+
+      ctx.fillStyle = '#5b9bd5'; ctx.fillRect(W/2 - 80, H - 16, 10, 10);
+      ctx.fillStyle = '#333'; ctx.font = '10px Roboto Mono'; ctx.textAlign = 'left';
+      ctx.fillText('GT', W/2 - 66, H - 7);
+      ctx.fillStyle = '#ed7d31'; ctx.fillRect(W/2 + 10, H - 16, 10, 10);
+      ctx.fillStyle = '#333'; ctx.fillText('Pred', W/2 + 24, H - 7);
+    }
+
+    function drawForceSide(ox, oy, W, H, title, gt, pred) {
+      if (!gt || !pred) return;
+      var mg = { t: 30, b: 35, l: 38, r: 8 };
+      var cW = W - mg.l - mg.r, cH = H - mg.t - mg.b;
+      var cx = ox + mg.l, cy = oy + mg.t;
+      var meta = S.data.meta;
+      var vmin = meta.forceMin, vmax = meta.forceMax;
+      var range = vmax - vmin;
+      if (range <= 0) range = 1;
+      var yScale = cH / range;
+
+      ctx.fillStyle = '#333'; ctx.font = 'bold 12px Roboto Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(title, ox + W/2, oy + 18);
+
+      ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 0.5;
+      var step = range > 3 ? 1 : range > 1 ? 0.5 : 0.2;
+      for (var v = Math.ceil(vmin / step) * step; v <= vmax; v += step) {
+        var yy = cy + cH - (v - vmin) * yScale;
+        ctx.beginPath(); ctx.moveTo(cx, yy); ctx.lineTo(cx + cW, yy); ctx.stroke();
+        ctx.fillStyle = '#999'; ctx.font = '9px Roboto Mono'; ctx.textAlign = 'right';
+        ctx.fillText(v.toFixed(1), cx - 4, yy + 3);
+      }
+
+      if (vmin <= 0 && vmax >= 0) {
+        var z = cy + cH - (0 - vmin) * yScale;
+        ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1;
+        ctx.setLineDash([3,3]); ctx.beginPath();
+        ctx.moveTo(cx, z); ctx.lineTo(cx + cW, z); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      var labels = meta.forceLabels || ['Th1','Th2','Idx','Mid','Ring','Pky'];
+      var gW = cW / 6, bW = gW * 0.32, gap = gW * 0.08;
+      for (var i = 0; i < 6; i++) {
+        var gx = cx + i * gW + gap;
+        var zeroY = cy + cH - (0 - vmin) * yScale;
+
+        var gtVal = gt[i], predVal = pred[i];
+        var gtH = gtVal * yScale, predH = predVal * yScale;
+
+        ctx.fillStyle = '#5b9bd5';
+        if (gtVal >= 0) ctx.fillRect(gx, zeroY - gtH, bW, gtH);
+        else ctx.fillRect(gx, zeroY, bW, -gtH);
+
+        ctx.fillStyle = '#ed7d31';
+        if (predVal >= 0) ctx.fillRect(gx + bW + 1, zeroY - predH, bW, predH);
+        else ctx.fillRect(gx + bW + 1, zeroY, bW, -predH);
+
+        ctx.fillStyle = '#333'; ctx.font = '9px Roboto Mono'; ctx.textAlign = 'center';
+        ctx.fillText(labels[i], cx + i * gW + gW/2, cy + cH + 14);
+      }
+    }
+
+    /* ---- Latent heatmap ---- */
+    function renderLatent(W, H) {
+      var d = S.data, f = S.frame;
+      if (!d.latent) return;
+      var pkP = S.side + '_' + S.finger + '_pred';
+      var pkG = S.side + '_' + S.finger + '_gt';
+      var pArr = d.latent[pkP], gArr = d.latent[pkG];
+      if (!pArr || !gArr || !pArr[f] || !gArr[f]) {
+        ctx.fillStyle = '#999'; ctx.font = '12px Roboto Mono'; ctx.textAlign = 'center';
+        ctx.fillText('No latent data for ' + S.side + ' ' + S.finger, W/2, H/2);
+        return;
+      }
+      var pred = pArr[f], gt = gArr[f];
+      var dim = pred.length;
+      var side = Math.ceil(Math.sqrt(dim));
+
+      var cacheKey = S.side + '_' + S.finger + '_' + (d.meta.totalFrames || 0);
+      if (S._latentCacheKey !== cacheKey) {
+        var dMin = new Float64Array(dim);
+        var dMax = new Float64Array(dim);
+        for (var i = 0; i < dim; i++) { dMin[i] = Infinity; dMax[i] = -Infinity; }
+        var nf = pArr.length;
+        for (var fi = 0; fi < nf; fi++) {
+          for (var i = 0; i < dim; i++) {
+            var pv = pArr[fi][i], gv = gArr[fi][i];
+            if (pv < dMin[i]) dMin[i] = pv;
+            if (pv > dMax[i]) dMax[i] = pv;
+            if (gv < dMin[i]) dMin[i] = gv;
+            if (gv > dMax[i]) dMax[i] = gv;
+          }
+        }
+        var minRange = S._allFingerMaxDimRange * 0.3;
+        for (var i = 0; i < dim; i++) {
+          var dr = dMax[i] - dMin[i];
+          if (dr < minRange) {
+            var center = (dMin[i] + dMax[i]) / 2;
+            dMin[i] = center - minRange / 2;
+            dMax[i] = center + minRange / 2;
+          }
+        }
+        S._latentCacheKey = cacheKey;
+        S._latentDimMin = dMin;
+        S._latentDimMax = dMax;
+      }
+      var dimMin = S._latentDimMin, dimMax = S._latentDimMax;
+
+      var margin = { t: 34, b: 16, l: 10, r: 50 };
+      var areaW = W - margin.l - margin.r;
+      var areaH = H - margin.t - margin.b;
+      var gridSize = Math.min(areaW / 2.15, areaH);
+      var cellSize = gridSize / side;
+      var gapX = 12;
+      var totalW = gridSize * 2 + gapX;
+      var startX = margin.l + (areaW - totalW) / 2;
+      var startY = margin.t + (areaH - gridSize) / 2;
+
+      var capSide = S.side.charAt(0).toUpperCase() + S.side.slice(1);
+      var capFinger = S.finger.charAt(0).toUpperCase() + S.finger.slice(1);
+      ctx.fillStyle = '#333'; ctx.font = 'bold 12px Roboto Mono'; ctx.textAlign = 'center';
+      ctx.fillText(capSide + ' ' + capFinger + ' Latent', W/2, 18);
+
+      var diffNorm = 0, pNorm = 0, gNorm = 0;
+      for (var i = 0; i < dim; i++) {
+        diffNorm += (pred[i] - gt[i]) * (pred[i] - gt[i]);
+        pNorm += pred[i] * pred[i];
+        gNorm += gt[i] * gt[i];
+      }
+      diffNorm = Math.sqrt(diffNorm); pNorm = Math.sqrt(pNorm); gNorm = Math.sqrt(gNorm);
+      var sim = (pNorm + gNorm > 1e-8) ? (1 - diffNorm / (pNorm + gNorm)) : 1;
+
+      ctx.font = '10px Roboto Mono';
+      ctx.fillText('Sim = ' + sim.toFixed(3), W/2, 30);
+
+      function drawGrid(data, x0, y0, label) {
+        ctx.fillStyle = '#555'; ctx.font = '11px Roboto Mono'; ctx.textAlign = 'center';
+        ctx.fillText(label, x0 + gridSize/2, startY - 6);
+        for (var r = 0; r < side; r++) {
+          for (var c = 0; c < side; c++) {
+            var idx = r * side + c;
+            var val = idx < dim ? data[idx] : NaN;
+            if (isNaN(val)) {
+              ctx.fillStyle = '#e0ddd5';
+            } else {
+              var dr = dimMax[idx] - dimMin[idx];
+              var t = dr > 1e-8 ? (val - dimMin[idx]) / dr : 0.5;
+              var rgb = coolwarm(t);
+              ctx.fillStyle = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
+            }
+            ctx.fillRect(x0 + c * cellSize, y0 + r * cellSize, cellSize - 0.5, cellSize - 0.5);
+          }
+        }
+        ctx.strokeStyle = '#ccc'; ctx.lineWidth = 0.5;
+        ctx.strokeRect(x0, y0, gridSize - 0.5, gridSize - 0.5);
+      }
+
+      drawGrid(pred, startX, startY, 'Pred');
+      drawGrid(gt, startX + gridSize + gapX, startY, 'GT');
+
+      var cbX = startX + gridSize * 2 + gapX + 14;
+      var cbW = 12, cbH = gridSize;
+      for (var i = 0; i < cbH; i++) {
+        var t = 1 - i / cbH;
+        var rgb = coolwarm(t);
+        ctx.fillStyle = 'rgb(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ')';
+        ctx.fillRect(cbX, startY + i, cbW, 1.5);
+      }
+      ctx.strokeStyle = '#aaa'; ctx.lineWidth = 0.5;
+      ctx.strokeRect(cbX, startY, cbW, cbH);
+      ctx.fillStyle = '#666'; ctx.font = '9px Roboto Mono'; ctx.textAlign = 'left';
+      ctx.fillText('high', cbX + cbW + 3, startY + 8);
+      ctx.fillText('low', cbX + cbW + 3, startY + cbH);
+    }
+
+    /* ---- Raw tactile hand heatmaps ---- */
+    function renderRaw(W, H) {
+      var d = S.data, f = S.frame;
+      if (!d.gt_raw) {
+        ctx.fillStyle = '#999'; ctx.font = '12px Roboto Mono'; ctx.textAlign = 'center';
+        ctx.fillText('No raw tactile data', W/2, H/2);
+        return;
+      }
+      var vmin = d.meta.rawMin, vmax = d.meta.rawMax;
+      var hasPred = d.raw_pred && d.raw_pred.left && d.raw_pred.left.length > 0;
+      var nRows = hasPred ? 2 : 1;
+      var titleH = 22, pad = 6;
+      var cellW = (W - pad) / 2;
+      var cellH = (H - pad) / nRows;
+
+      function drawPanel(label, flat, layout, col, row) {
+        var px = col * (cellW + pad / 2);
+        var py = row * cellH;
+        ctx.fillStyle = '#333'; ctx.font = 'bold 11px Roboto Mono'; ctx.textAlign = 'center';
+        ctx.fillText(label, px + cellW / 2, py + 15);
+        if (flat) drawHand(ctx, px, py + titleH, cellW, cellH - titleH - 4, flat, layout, vmin, vmax);
+      }
+
+      var gtL = d.gt_raw.left[f], gtR = d.gt_raw.right[f];
+      if (hasPred) {
+        drawPanel('GT Left', gtL, L_LAYOUT, 0, 0);
+        drawPanel('GT Right', gtR, R_LAYOUT, 1, 0);
+        drawPanel('Pred Left', d.raw_pred.left[f], L_LAYOUT, 0, 1);
+        drawPanel('Pred Right', d.raw_pred.right[f], R_LAYOUT, 1, 1);
+      } else {
+        drawPanel('GT Left', gtL, L_LAYOUT, 0, 0);
+        drawPanel('GT Right', gtR, R_LAYOUT, 1, 0);
+      }
+    }
+
+    /* ---- Tab UI ---- */
+    function updateTabUI() {
+      document.querySelectorAll('.dt-tab').forEach(function(btn) {
+        if (btn.getAttribute('data-mode') === S.mode)
+          btn.classList.add('dt-tab-active');
+        else
+          btn.classList.remove('dt-tab-active');
+      });
+      elFinSel.style.display = S.mode === 'latent' ? 'flex' : 'none';
+    }
+
+    /* ---- Event listeners ---- */
+    elPlay.addEventListener('click', togglePlay);
+
+    elSlider.addEventListener('input', function() {
+      if (S.playing) {
+        S.playing = false;
+        elPlay.innerHTML = '&#9654;';
+        elCam.pause();
+        if (S.animId) cancelAnimationFrame(S.animId);
+      }
+      seekFrame(parseInt(this.value, 10));
+    });
+
+    document.querySelectorAll('.dt-tab').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        S.mode = this.getAttribute('data-mode');
+        updateTabUI();
+        renderVis();
+      });
+    });
+
+    elSide.addEventListener('change', function() { S.side = this.value; renderVis(); });
+    elFinger.addEventListener('change', function() { S.finger = this.value; renderVis(); });
+
+    elEpisode.addEventListener('change', function() {
+      var ep = EPISODES.find(function(e) { return e.id === elEpisode.value; });
+      if (ep) {
+        S.playing = false;
+        elPlay.innerHTML = '&#9654;';
+        loadEpisode(ep);
+      }
+    });
+
+    window.addEventListener('resize', function() {
+      if (S.data) renderVis();
+    });
+
+    /* ---- Keyboard shortcuts ---- */
+    document.addEventListener('keydown', function(e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      if (e.key === ' ') { e.preventDefault(); togglePlay(); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); seekFrame(S.frame + 1); }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); seekFrame(S.frame - 1); }
+    });
+
+    /* ---- Init ---- */
+    EPISODES.forEach(function(ep) {
+      var opt = document.createElement('option');
+      opt.value = ep.id; opt.textContent = ep.label;
+      elEpisode.appendChild(opt);
+    });
+
+    if (EPISODES.length > 0) loadEpisode(EPISODES[0]);
+    else renderPlaceholder('No episodes configured. Edit EPISODES in the script.');
+  })();
   </script>
 
 </body>

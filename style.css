@@ -674,6 +674,186 @@ video.r2s-video-item {
 .better-video-frame video {
   width: 100%;
   height: 100%;
-  object-fit: cover;   /* 关键：确保视频铺满 360x224 的区域而不变形 */
+  object-fit: cover;
   display: block;
 }
+
+/* ==================== Dream Touch Visualization ==================== */
+#dt-root {
+  max-width: 960px;
+  margin: 0 auto 40px;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 13px;
+}
+#dt-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.dt-label {
+  font-weight: 600;
+}
+#dt-controls select {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 4px 8px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+}
+#dt-mode-badge {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+#dt-mode-badge.dt-badge-latent { background: #e8d5f5; color: #6a2c91; }
+#dt-mode-badge.dt-badge-raw { background: #d5eaf5; color: #1a5276; }
+#dt-tabs {
+  display: flex;
+  gap: 4px;
+}
+.dt-tab {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 12px;
+  padding: 5px 14px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background: #f5f3ee;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.dt-tab:hover { background: #ebe8e0; }
+.dt-tab-active {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+#dt-finger-sel {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+#dt-panels {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1b1b1b;
+}
+#dt-cam-wrap {
+  flex: 1;
+  position: relative;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+}
+#dt-cam-wrap video {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+}
+#dt-cam-loading {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 15px;
+  font-family: 'Roboto Mono', monospace;
+  background: #111;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+#dt-cam-loading.dt-hidden { opacity: 0; }
+#dt-cam-label {
+  position: absolute;
+  bottom: 6px;
+  left: 8px;
+  color: rgba(255,255,255,0.55);
+  font-size: 11px;
+  pointer-events: none;
+}
+#dt-play:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+#dt-vis-wrap {
+  flex: 1;
+  position: relative;
+  background: #faf8f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+}
+#dt-vis-wrap canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: none;
+  border-radius: 0;
+  margin: 0;
+}
+#dt-playback {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#dt-play {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: #333;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+#dt-play:hover { background: #555; }
+#dt-slider {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: #ddd;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+#dt-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #333;
+  cursor: pointer;
+}
+#dt-time {
+  min-width: 100px;
+  text-align: right;
+  font-size: 12px;
+  color: #555;
+  flex-shrink: 0;
+}
+/* ==================== End Dream Touch ==================== */
