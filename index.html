@@ -127,6 +127,28 @@
     </div>
 
     <div class="tagline" id="policies">Autonomous Policies</div>
+    <div class="video-gallery-section" id="TowelGallerySection">
+      <div class="video-gallery-container">
+        <div class="video-gallery video-gallery-original-ratio" id="videoGalleryTowel">
+          <video class="gallery-video" src="./videos/towel/towel_sequence.mp4" autoplay muted playsinline loop></video>
+          <video class="gallery-video" src="./videos/towel/towel_hard_right2.mp4" autoplay muted playsinline loop></video>
+          <video class="gallery-video" src="./videos/towel/towel_hard_left.mp4" autoplay muted playsinline loop></video>
+          <video class="gallery-video" src="./videos/towel/towel_hard_right3.mp4" autoplay muted playsinline loop></video>
+          <video class="gallery-video" src="./videos/towel/towel_normal.mp4" autoplay muted playsinline loop></video>
+          <video class="gallery-video" src="./videos/towel/towel_hard_right4.mp4" autoplay muted playsinline loop></video>
+        </div>
+      </div>
+      <div class="gallery-caption-container">
+        <div class="gallery-nav-controls">
+          <button class="gallery-nav left" id="scrollLeftBtnTowel">&lt;</button>
+          <button class="gallery-nav right" id="scrollRightBtnTowel">&gt;</button>
+        </div>
+        <p class="figure-caption gallery-caption">
+          <b>Policy rollouts for towel folding. All videos are played at original speed (1X) unless otherwise noted.</b>
+        </p>
+      </div>
+    </div>
+
     <div class="video-gallery-section" id="InsertTGallerySection">
       <div class="video-gallery-container">
         <div class="video-gallery video-gallery-original-ratio" id="videoGalleryInsertT">
@@ -406,6 +428,12 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const galleries = [
+        {
+          sectionId: 'TowelGallerySection',
+          galleryInnerId: 'videoGalleryTowel',
+          scrollLeftBtnId: 'scrollLeftBtnTowel',
+          scrollRightBtnId: 'scrollRightBtnTowel'
+        },
         {
           sectionId: 'InsertTGallerySection',
           galleryInnerId: 'videoGalleryInsertT',
