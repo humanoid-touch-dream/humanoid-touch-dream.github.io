@@ -182,7 +182,8 @@
       For the latent tactile heatmaps, each latent dimension is independently
       normalized over the episode, with a minimum-range threshold derived from the
       most active dimension across all fingers to distinguish active from inactive
-      contact regions.
+      contact regions. Note that this per-dimension normalization amplifies subtle
+      changes and prediction errors in the latent space for better visibility.
     </div>
 
     <div id="dt-root">
@@ -472,6 +473,8 @@
     const EPISODES = [
       { id: 'insert_t_ep1', label: 'Insert-T Episode 1', path: 'dream_touch_data/insert_t_ep1' },
       { id: 'insert_t_ep2', label: 'Insert-T Episode 2', path: 'dream_touch_data/insert_t_ep2' },
+      { id: 'tea_ep1', label: 'Tea Serving Episode 1', path: 'dream_touch_data/tea_ep1' },
+      { id: 'tea_ep2', label: 'Tea Serving Episode 2', path: 'dream_touch_data/tea_ep2' },
     ];
 
     /* ---- Colormaps ---- */
@@ -493,6 +496,8 @@
     function coolwarm(t) { return lerpCmap(CW_STOPS, t); }
     var REDS_STOPS = [[0,255,245,240],[.15,254,224,210],[.3,252,187,161],[.45,252,146,114],[.6,251,106,74],[.75,239,59,44],[.9,203,24,29],[1,103,0,13]];
     function redsMap(t) { return lerpCmap(REDS_STOPS, t); }
+    var GREY_ORANGE_STOPS = [[0,200,200,200],[.25,210,190,170],[.5,220,170,120],[.75,230,140,60],[1,230,110,0]];
+    function greyOrangeMap(t) { return lerpCmap(GREY_ORANGE_STOPS, t); }
     var YLORD_STOPS = [[0,255,255,204],[.15,255,237,160],[.3,254,217,118],[.45,254,178,76],[.6,253,141,60],[.75,252,78,42],[.9,227,26,28],[1,177,0,38]];
     function ylOrRdMap(t) { return lerpCmap(YLORD_STOPS, t); }
 
