@@ -1117,5 +1117,51 @@
   })();
   </script>
 
+<!-- Video lightbox modal -->
+<div id="video-lightbox" class="video-lightbox-overlay" style="display:none;">
+  <div class="video-lightbox-content">
+    <button class="video-lightbox-close">&times;</button>
+    <video id="video-lightbox-player" controls autoplay loop muted playsinline></video>
+  </div>
+</div>
+
+<script>
+(function() {
+  var overlay = document.getElementById('video-lightbox');
+  var player = document.getElementById('video-lightbox-player');
+  var closeBtn = overlay.querySelector('.video-lightbox-close');
+
+  document.querySelectorAll('.gallery-video').forEach(function(vid) {
+    vid.style.cursor = 'pointer';
+    vid.addEventListener('click', function() {
+      player.src = this.src;
+      overlay.style.display = 'flex';
+    });
+  });
+
+  closeBtn.addEventListener('click', function() {
+    overlay.style.display = 'none';
+    player.pause();
+    player.src = '';
+  });
+
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) {
+      overlay.style.display = 'none';
+      player.pause();
+      player.src = '';
+    }
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && overlay.style.display === 'flex') {
+      overlay.style.display = 'none';
+      player.pause();
+      player.src = '';
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
