@@ -127,6 +127,31 @@
     </div>
 
     <div class="tagline" id="policies">Autonomous Policies</div>
+    <div class="video-gallery-section" id="ScoopGallerySection">
+      <div class="video-gallery-container">
+        <div class="video-gallery video-gallery-original-ratio" id="videoGalleryScoop">
+          <video class="gallery-video" src="./videos/scoop/scoop_long.mp4" autoplay muted playsinline loop style="height: 336px;"></video>
+          <video class="gallery-video" src="./videos/scoop/scoop_robust.mp4" autoplay muted playsinline loop style="height: 336px;"></video>
+          <video class="gallery-video" src="./videos/scoop/scoop1.mp4" autoplay muted playsinline loop style="height: 336px;"></video>
+          <video class="gallery-video" src="./videos/scoop/scoop7.mp4" autoplay muted playsinline loop style="height: 336px;"></video>
+          <video class="gallery-video" src="./videos/scoop/scoop2.mp4" autoplay muted playsinline loop style="height: 336px;"></video>
+          <video class="gallery-video" src="./videos/scoop/scoop3.mp4" autoplay muted playsinline loop style="height: 336px;"></video>
+          <video class="gallery-video" src="./videos/scoop/scoop4.mp4" autoplay muted playsinline loop style="height: 336px;"></video>
+          <video class="gallery-video" src="./videos/scoop/scoop5.mp4" autoplay muted playsinline loop style="height: 336px;"></video>
+          <video class="gallery-video" src="./videos/scoop/scoop6.mp4" autoplay muted playsinline loop style="height: 336px;"></video>
+        </div>
+      </div>
+      <div class="gallery-caption-container">
+        <div class="gallery-nav-controls">
+          <button class="gallery-nav left" id="scrollLeftBtnScoop">&lt;</button>
+          <button class="gallery-nav right" id="scrollRightBtnScoop">&gt;</button>
+        </div>
+        <p class="figure-caption gallery-caption">
+          <b>Policy rollouts for cat litter scooping. All videos are played at original speed (1X) unless otherwise noted. Most videos were recorded while the left hand was experiencing intermittent communication failures (see Video 2), shortly before it went fully offline.</b>
+        </p>
+      </div>
+    </div>
+
     <div class="video-gallery-section" id="TowelGallerySection">
       <div class="video-gallery-container">
         <div class="video-gallery video-gallery-original-ratio" id="videoGalleryTowel">
@@ -451,6 +476,12 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const galleries = [
+        {
+          sectionId: 'ScoopGallerySection',
+          galleryInnerId: 'videoGalleryScoop',
+          scrollLeftBtnId: 'scrollLeftBtnScoop',
+          scrollRightBtnId: 'scrollRightBtnScoop'
+        },
         {
           sectionId: 'TowelGallerySection',
           galleryInnerId: 'videoGalleryTowel',

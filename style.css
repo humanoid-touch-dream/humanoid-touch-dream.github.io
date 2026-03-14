@@ -592,6 +592,10 @@ video.r2s-video-item {
   background-color: transparent;
 }
 
+#ScoopGallerySection .video-gallery .gallery-video {
+  height: 336px;
+}
+
 /* Styling for the caption and navigation controls container */
 .gallery-caption-container {
   max-width: 960px; /* Align container with main content */
