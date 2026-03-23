@@ -243,6 +243,13 @@
       </div>
     </div>
 
+    <div class="results-figure">
+      <img src="./figs/htd_main_results.png" alt="Main comparison results: success rate and task score across five tasks">
+    </div>
+    <p class="figure-caption">
+      <b>Policy Performance.</b> Comparison of success rate and task score across five contact-rich tasks. HTD (Ours) consistently outperforms ACT baselines with and without touch input, achieving the highest average success rate and task score.
+    </p>
+
     <!-- ============ Touch Dreaming Interactive Visualization ============ -->
     <div class="tagline" id="dreamtouch">Touch Dreaming Visualization</div>
     <div class="paper-section" style="margin-bottom: 16px;">
@@ -306,6 +313,13 @@
     </div>
     <!-- ============ End Touch Dreaming ============ -->
 
+    <div class="results-figure">
+      <img src="./figs/htd_ablation.png" alt="Ablation study: effect of touch dreaming variants on Insert-T and Towel tasks">
+    </div>
+    <p class="figure-caption">
+      <b>Ablation Study.</b> Effect of touch dreaming on Insert-T and Towel Folding tasks. Dream Latent Tactile achieves the best overall performance, demonstrating the benefit of predicting future latent tactile representations.
+    </p>
+
     <!-- <div class="columns is-centered">  
       <div class="interpolation-panel"
         style="width: 1280px; height: 340px; background-color: #fff4cf; margin: 0 auto; border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center;">
@@ -342,6 +356,60 @@
           </p>
       </div>
     </div>
+
+    <div class="results-table-wrap">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Ours</th>
+            <th>AMO</th>
+            <th>FALCON</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><i>E<sub>v</sub></i> (m/s)</td>
+            <td class="best">0.1420 &pm; 0.0568</td>
+            <td>0.1779 &pm; 0.0642</td>
+            <td>0.1641 &pm; 0.0309</td>
+          </tr>
+          <tr>
+            <td><i>E<sub>&omega;</sub></i> (rad/s)</td>
+            <td>0.1806 &pm; 0.0534</td>
+            <td class="best">0.1540 &pm; 0.0316</td>
+            <td>0.1874 &pm; 0.0263</td>
+          </tr>
+          <tr>
+            <td><i>E<sub>h</sub></i> (m)</td>
+            <td class="best">0.0280 &pm; 0.0438</td>
+            <td>0.0568 &pm; 0.0814</td>
+            <td>0.1299 &pm; 0.0082</td>
+          </tr>
+          <tr>
+            <td><i>E<sub>y</sub></i> (rad)</td>
+            <td class="best">0.0126 &pm; 0.0051</td>
+            <td>0.1540 &pm; 0.0534</td>
+            <td>0.1215 &pm; 0.0111</td>
+          </tr>
+          <tr>
+            <td><i>E<sub>p</sub></i> (rad)</td>
+            <td class="best">0.0487 &pm; 0.1796</td>
+            <td>0.1519 &pm; 0.1254</td>
+            <td class="not-tracked">(not tracked)</td>
+          </tr>
+          <tr>
+            <td><i>E<sub>r</sub></i> (rad)</td>
+            <td class="best">0.0157 &pm; 0.0065</td>
+            <td>0.0735 &pm; 0.0447</td>
+            <td class="not-tracked">(not tracked)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="figure-caption">
+      <b>Tracking Error Comparison.</b> Our whole-body controller achieves the lowest tracking error across most metrics compared to AMO (Li et al., RSS 2025) and FALCON (Zhang et al., L4DC 2026). Bold values indicate the best result in each row.
+    </p>
 
     <!-- <div class="tagline" id="touchdreaming">Humanoid Drearm Touch.</div> -->
     <!-- <div class="column has-text-centered">

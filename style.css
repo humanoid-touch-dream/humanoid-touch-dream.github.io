@@ -862,6 +862,71 @@ video.r2s-video-item {
 }
 /* ==================== End Dream Touch ==================== */
 
+/* ==================== Results Table ==================== */
+.results-table-wrap {
+  max-width: 780px;
+  margin: 10px auto 10px;
+  overflow-x: auto;
+}
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 13px;
+  background: transparent;
+}
+.results-table thead th {
+  background: transparent;
+  color: #1b1b1b;
+  font-weight: 700;
+  padding: 10px 16px;
+  text-align: center;
+  border-bottom: 2px solid #1b1b1b;
+  border-top: 2px solid #1b1b1b;
+}
+.results-table thead th:first-child {
+  text-align: left;
+}
+.results-table tbody td {
+  padding: 9px 16px;
+  text-align: center;
+  border-bottom: 1px solid #d5d0c8;
+}
+.results-table tbody td:first-child {
+  text-align: left;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.results-table tbody tr:last-child td {
+  border-bottom: 2px solid #1b1b1b;
+}
+.results-table tbody tr:hover {
+  background: rgba(0,0,0,0.03);
+}
+.results-table .best {
+  font-weight: 700;
+  color: #1a1a1a;
+}
+.results-table .not-tracked {
+  color: #999;
+  font-style: italic;
+}
+
+/* ==================== Results Figures ==================== */
+.results-figure {
+  max-width: 960px;
+  margin: 0 auto 8px;
+  text-align: center;
+}
+.results-figure img {
+  width: 100%;
+  max-width: 900px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
 /* ==================== Video Lightbox ==================== */
 .video-lightbox-overlay {
   position: fixed;
