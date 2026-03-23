@@ -813,7 +813,7 @@
         var mode = btn.getAttribute('data-mode');
         btn.style.display = hasTabs[mode] ? '' : 'none';
         if (mode === 'raw') {
-          btn.textContent = m.hasRawPred ? 'Raw Tactile' : 'GT Tactile';
+          btn.textContent = m.hasRawPred ? 'Raw Tactile' : 'Ground Truth Tactile';
         }
       });
 
@@ -944,9 +944,9 @@
 
       ctx.fillStyle = '#8fb8c9'; ctx.fillRect(W/2 - 80, H - 16, 10, 10);
       ctx.fillStyle = '#333'; ctx.font = '10px Roboto Mono'; ctx.textAlign = 'left';
-      ctx.fillText('GT', W/2 - 66, H - 7);
-      ctx.fillStyle = '#d4a07a'; ctx.fillRect(W/2 + 10, H - 16, 10, 10);
-      ctx.fillStyle = '#333'; ctx.fillText('Pred', W/2 + 24, H - 7);
+      ctx.fillText('Ground Truth', W/2 - 66, H - 7);
+      ctx.fillStyle = '#d4a07a'; ctx.fillRect(W/2 + 50, H - 16, 10, 10);
+      ctx.fillStyle = '#333'; ctx.fillText('Predicted', W/2 + 64, H - 7);
     }
 
     function drawForceSide(ox, oy, W, H, title, gt, pred) {
@@ -1098,8 +1098,8 @@
         ctx.strokeRect(x0, y0, gridSize - 0.5, gridSize - 0.5);
       }
 
-      drawGrid(pred, startX, startY, 'Pred');
-      drawGrid(gt, startX + gridSize + gapX, startY, 'GT');
+      drawGrid(pred, startX, startY, 'Predicted');
+      drawGrid(gt, startX + gridSize + gapX, startY, 'Ground Truth');
 
       var cbX = startX + gridSize * 2 + gapX + 14;
       var cbW = 12, cbH = gridSize;
@@ -1141,13 +1141,13 @@
 
       var gtL = d.gt_raw.left[f], gtR = d.gt_raw.right[f];
       if (hasPred) {
-        drawPanel('GT Left', gtL, L_LAYOUT, 0, 0);
-        drawPanel('GT Right', gtR, R_LAYOUT, 1, 0);
-        drawPanel('Pred Left', d.raw_pred.left[f], L_LAYOUT, 0, 1);
-        drawPanel('Pred Right', d.raw_pred.right[f], R_LAYOUT, 1, 1);
+        drawPanel('Ground Truth Left', gtL, L_LAYOUT, 0, 0);
+        drawPanel('Ground Truth Right', gtR, R_LAYOUT, 1, 0);
+        drawPanel('Predicted Left', d.raw_pred.left[f], L_LAYOUT, 0, 1);
+        drawPanel('Predicted Right', d.raw_pred.right[f], R_LAYOUT, 1, 1);
       } else {
-        drawPanel('GT Left', gtL, L_LAYOUT, 0, 0);
-        drawPanel('GT Right', gtR, R_LAYOUT, 1, 0);
+        drawPanel('Ground Truth Left', gtL, L_LAYOUT, 0, 0);
+        drawPanel('Ground Truth Right', gtR, R_LAYOUT, 1, 0);
       }
     }
 
