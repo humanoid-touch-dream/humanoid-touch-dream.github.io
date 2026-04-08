@@ -682,7 +682,7 @@ video.r2s-video-item {
   display: block;
 }
 
-/* ==================== Dream Touch Visualization ==================== */
+/* ==================== Touch Dream Visualization ==================== */
 #dt-root {
   max-width: 960px;
   margin: 0 auto 40px;
@@ -860,7 +860,7 @@ video.r2s-video-item {
   color: #555;
   flex-shrink: 0;
 }
-/* ==================== End Dream Touch ==================== */
+/* ==================== End Touch Dream ==================== */
 
 /* ==================== Results Table ==================== */
 .results-table-wrap {

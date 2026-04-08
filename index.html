@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Humanoid Dream Touch</title>
+  <title>Humanoid Touch Dream</title>
   <link rel="icon" href="./figs/egox_iconv2.png" type="image/png">
   <link rel="stylesheet" href="./css/bulma.min.css">
   <link rel="stylesheet"
@@ -27,7 +27,7 @@
   </div>
 
   <div class="main-content">
-    <div class="hero-text">Humanoid DreamTouch</div>
+    <div class="hero-text">Humanoid TouchDream</div>
     <div class="sub-hero-text">Learning Versatile Humanoid Manipulation with Touch Dreaming</div>
 
     <!-- Add Authors -->
@@ -53,14 +53,14 @@
 
     <!-- Caption for Figure 1 (Teaser Video) -->
     <!-- <p class="figure-caption">
-        <span style="font-variant: small-caps;">DreamTouch</span> is an uniformed framework for cross-embodiment learning including data collection and model training.
+        <span style="font-variant: small-caps;">TouchDream</span> is an uniformed framework for cross-embodiment learning including data collection and model training.
     </p> -->
 
     <div class="column has-text-centered">
       <div class="publication-links">
         <!-- PDF Link. -->
         <span class="link-block">
-          <a href="https://humanoid-dream-touch.github.io/"
+          <a href="https://humanoid-touch-dream.github.io/"
               class="external-link button is-normal is-rounded is-dark">
             <span class="icon">
                 <i class="fas fa-file-pdf"></i>
@@ -70,7 +70,7 @@
         </span>
         <!-- arXiv Link. -->
         <!-- <span class="link-block">
-          <a href="https://humanoid-dream-touch.github.io/"
+          <a href="https://humanoid-touch-dream.github.io/"
               class="external-link button is-normal is-rounded is-dark">
             <span class="icon">
                 <i class="ai ai-arxiv"></i>
@@ -80,7 +80,7 @@
         </span> -->
         <!-- Video Link. -->
         <span class="link-block">
-          <a href="https://humanoid-dream-touch.github.io/"
+          <a href="https://humanoid-touch-dream.github.io/"
               class="external-link button is-normal is-rounded is-dark">
             <span class="icon">
                 <i class="fab fa-youtube"></i>
@@ -90,7 +90,7 @@
         </span>
         <!-- Code Link. -->
         <span class="link-block">
-          <a href="https://humanoid-dream-touch.github.io/"
+          <a href="https://humanoid-touch-dream.github.io/"
               class="external-link button is-normal is-rounded is-dark">
             <span class="icon">
                 <i class="fab fa-github"></i>
@@ -100,7 +100,7 @@
         </span>
         <!-- Dataset Link. -->
         <span class="link-block">
-          <a href="https://humanoid-dream-touch.github.io/"
+          <a href="https://humanoid-touch-dream.github.io/"
               class="external-link button is-normal is-rounded is-dark">
             <span class="icon">
                 <i class="far fa-images"></i>
@@ -114,11 +114,11 @@
     <!-- <div class="tagline">Teaser Video.</div> -->
     <div class="column has-text-centered">
       <div class="better-video-frame">
-        <video src="./videos/dream_touch_teaser_v1.mp4" controls autoplay muted playsinline loop></video>
+        <video src="./videos/touch_dream_teaser_v1.mp4" controls autoplay muted playsinline loop></video>
       </div>
     </div>
     <p class="figure-caption">
-      <b>Humnaoid DreamTouch provides a data collection and training framework to learn contact-aware policies for versatile humanoid manipulation.</b>
+      <b>Humanoid TouchDream provides a data collection and training framework to learn contact-aware policies for versatile humanoid manipulation.</b>
     </p>
 
     <div class="tagline" id="abstract">Abstract.</div>
@@ -411,7 +411,7 @@
       <b>Tracking Error Comparison.</b> Our whole-body controller achieves the lowest tracking error across most metrics compared to AMO (Li et al., RSS 2025) and FALCON (Zhang et al., L4DC 2026). Bold values indicate the best result in each row.
     </p>
 
-    <!-- <div class="tagline" id="touchdreaming">Humanoid Drearm Touch.</div> -->
+    <!-- <div class="tagline" id="touchdreaming">Humanoid Touch Dream.</div> -->
     <!-- <div class="column has-text-centered">
       <div class="better-video-frame">
       <video src="./videos/embodiment_compare.mp4" controls autoplay muted playsinline loop></video>
@@ -427,7 +427,7 @@
 
     <div class="paper-bibtex-code" id="BibTex">
       <div class="paper-bibtex-title">BibTeX</div>
-      <pre><code>@inproceedings{DreamTouch,
+      <pre><code>@inproceedings{TouchDream,
         title     = {Learning Dexterous Humanoid Manipulation with Touch Dreaming},
         author    = {anonymous},
         booktitle = {Proceedings of the Conference on Robot Learning (IROS)},
@@ -621,23 +621,23 @@
     });
   </script>
 
-  <!-- ============ Dream Touch Visualization JS ============ -->
+  <!-- ============ Touch Dream Visualization JS ============ -->
   <script>
   (function() {
     'use strict';
 
     /* ---- Configuration: add your episodes here ---- */
     const EPISODES = [
-      { id: 'scoop_ep1', label: 'Cat Litter Scooping Episode 1', path: 'dream_touch_data/scoop_ep1' },
-      { id: 'insert_t_ep1', label: 'Insert-T Episode 1', path: 'dream_touch_data/insert_t_ep1' },
-      { id: 'insert_t_ep2', label: 'Insert-T Episode 2', path: 'dream_touch_data/insert_t_ep2' },
-      { id: 'tea_ep1', label: 'Tea Serving Episode 1', path: 'dream_touch_data/tea_ep1' },
-      { id: 'tea_ep2', label: 'Tea Serving Episode 2', path: 'dream_touch_data/tea_ep2' },
-      { id: 'towel_ep1', label: 'Towel Folding Episode 1', path: 'dream_touch_data/towel_ep1' },
-      { id: 'towel_ep2', label: 'Towel Folding Episode 2', path: 'dream_touch_data/towel_ep2' },
-      { id: 'towel_ep3', label: 'Towel Folding Episode 3', path: 'dream_touch_data/towel_ep3' },
-      { id: 'book_ep1', label: 'Book Organization Episode 1', path: 'dream_touch_data/book_ep1' },
-      { id: 'book_ep2', label: 'Book Organization Episode 2', path: 'dream_touch_data/book_ep2' },
+      { id: 'scoop_ep1', label: 'Cat Litter Scooping Episode 1', path: 'touch_dream_data/scoop_ep1' },
+      { id: 'insert_t_ep1', label: 'Insert-T Episode 1', path: 'touch_dream_data/insert_t_ep1' },
+      { id: 'insert_t_ep2', label: 'Insert-T Episode 2', path: 'touch_dream_data/insert_t_ep2' },
+      { id: 'tea_ep1', label: 'Tea Serving Episode 1', path: 'touch_dream_data/tea_ep1' },
+      { id: 'tea_ep2', label: 'Tea Serving Episode 2', path: 'touch_dream_data/tea_ep2' },
+      { id: 'towel_ep1', label: 'Towel Folding Episode 1', path: 'touch_dream_data/towel_ep1' },
+      { id: 'towel_ep2', label: 'Towel Folding Episode 2', path: 'touch_dream_data/towel_ep2' },
+      { id: 'towel_ep3', label: 'Towel Folding Episode 3', path: 'touch_dream_data/towel_ep3' },
+      { id: 'book_ep1', label: 'Book Organization Episode 1', path: 'touch_dream_data/book_ep1' },
+      { id: 'book_ep2', label: 'Book Organization Episode 2', path: 'touch_dream_data/book_ep2' },
     ];
 
     /* ---- Colormaps ---- */
@@ -666,7 +666,7 @@
     var YLORD_STOPS = [[0,255,255,204],[.15,255,237,160],[.3,254,217,118],[.45,254,178,76],[.6,253,141,60],[.75,252,78,42],[.9,227,26,28],[1,177,0,38]];
     function ylOrRdMap(t) { return lerpCmap(YLORD_STOPS, t); }
 
-    /* ---- Hand heatmap constants (ported from vis_dream_touch.py) ---- */
+    /* ---- Hand heatmap constants (ported from vis_touch_dream.py) ---- */
     var HAND_H = 52, HAND_W = 58;
     var REGION_SPECS = [
       ['fingerone_tip_touch',9,3,3],['fingerone_top_touch',96,12,8],['fingerone_palm_touch',80,10,8],
@@ -776,7 +776,7 @@
       } catch (e) {
         console.warn('Failed to load data.json for', ep.id, e);
         S.data = null;
-        renderPlaceholder('Data not found. Run export_dream_touch_web.py first.');
+        renderPlaceholder('Data not found. Run export_touch_dream_web.py first.');
         return;
       }
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""Export dream touch .npz episode data to web-friendly format.
+"""Export touch dream .npz episode data to web-friendly format.
 
 Generates:
   cam_right.mp4  - Right half of stereo head cam video
   data.json      - Force + latent data per frame (compact)
 
 Usage:
-  python export_dream_touch_web.py \\
+  python export_touch_dream_web.py \\
     --dir /path/to/step_*.npz_directory \\
-    --output_dir dream_touch_data/insert_t_ep1 \\
+    --output_dir touch_dream_data/insert_t_ep1 \\
     --subsample 3 --fps 30
 """
 
@@ -70,7 +70,7 @@ def export_cam_video(frames, output_path, fps):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Export dream touch data for web visualization")
+    parser = argparse.ArgumentParser(description="Export touch dream data for web visualization")
     parser.add_argument("--dir", required=True, help="Directory with step_*.npz files")
     parser.add_argument("--output_dir", required=True, help="Output directory for web data")
     parser.add_argument("--subsample", type=int, default=3,
