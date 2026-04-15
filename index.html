@@ -20,6 +20,7 @@
       <li><a href="#policies"> Autonomous Policies</a></li>
       <li><a href="#dreamtouch"> Touch Dreaming</a></li>
       <li><a href="#wbc"> Whole-Body Controllor</a></li>
+      <li><a href="#BibTex">Citation</a></li>
       <!-- <li><a href="#retargeting">Motion Retargeting</a></li>
       <li><a href="#touchdreaming">Touch Drearming</a></li> -->
       <!-- <li><a href="#acknowledgements">Acknowledgements</a></li> -->
@@ -27,16 +28,25 @@
   </div>
 
   <div class="main-content">
-    <div class="hero-text">Humanoid TouchDream</div>
-    <div class="sub-hero-text">Learning Versatile Humanoid Manipulation with Touch Dreaming</div>
+    <div class="hero-text">Humanoid Touch Dream</div>
+    <div class="sub-hero-text">Learning Versatile Humanoid Manipulation<br>with Touch Dreaming</div>
 
     <!-- Add Authors -->
-    <!-- <div class="authors">
-      <a href="https://yaruniu.com/" target="_blank">Yaru Niu</a><br>
-      <a href="https://www.meche.engineering.cmu.edu/directory/bios/zhao-ding.html" target="_blank">Ding Zhao</a>
-      <span class="affiliation">Carnegie Mellon University, Google Research</span>
-      <span class="affiliation" style="color: #555; text-align: center; font-size: 20px; margin-top: 6px;">Under prepration for IROS 2026</span>
-    </div> -->
+    <div class="authors">
+      <a href="https://yaruniu.com/" target="_blank">Yaru Niu</a><sup>1</sup>,
+      Zhenlong Fang<sup>1</sup>,
+      Binghong Chen<sup>1</sup>,
+      <a href="https://www.shuai-zhou.com/" target="_blank">Shuai Zhou</a><sup>1</sup>,
+      <a href="https://revanthsenthil.github.io/" target="_blank">Revanth Senthilkumaran</a><sup>1</sup>,
+      <a href="https://haozhang-thu.github.io/" target="_blank">Hao Zhang</a><sup>1,2</sup>,
+      Bingqing Chen<sup>3</sup>,
+      Chen Qiu<sup>3</sup>,
+      <a href="https://etaic.github.io/" target="_blank">H. Eric Tseng</a><sup>2</sup>,
+      <a href="https://jonfranc.com/" target="_blank">Jonathan Francis</a><sup>1,3</sup>,
+      <a href="https://www.meche.engineering.cmu.edu/directory/bios/zhao-ding.html" target="_blank">Ding Zhao</a><sup>1</sup>
+      <span class="affiliation"><sup>1</sup>Carnegie Mellon University, <sup>2</sup>UT Arlington, <sup>3</sup>Bosch Center for AI</span>
+      <!-- <span class="affiliation" style="color: #555; text-align: center; font-size: 20px; margin-top: 6px;">Under prepration for IROS 2026</span> -->
+    </div>
     <!-- End Authors -->
 
     <!-- use the video ./figs/videomimic_teaser.mp4 -->
@@ -60,7 +70,7 @@
       <div class="publication-links">
         <!-- PDF Link. -->
         <span class="link-block">
-          <a href="https://humanoid-touch-dream.github.io/"
+          <a href="https://humanoid-touch-dream.github.io/pdfs/humanoid_touch_dream.pdf"
               class="external-link button is-normal is-rounded is-dark">
             <span class="icon">
                 <i class="fas fa-file-pdf"></i>
@@ -69,17 +79,17 @@
           </a>
         </span>
         <!-- arXiv Link. -->
-        <!-- <span class="link-block">
-          <a href="https://humanoid-touch-dream.github.io/"
+        <span class="link-block">
+          <a href="https://arxiv.org/abs/2604.13015/"
               class="external-link button is-normal is-rounded is-dark">
             <span class="icon">
                 <i class="ai ai-arxiv"></i>
             </span>
             <span>arXiv</span>
           </a>
-        </span> -->
+        </span>
         <!-- Video Link. -->
-        <span class="link-block">
+        <!-- <span class="link-block">
           <a href="https://humanoid-touch-dream.github.io/"
               class="external-link button is-normal is-rounded is-dark">
             <span class="icon">
@@ -87,7 +97,7 @@
             </span>
             <span>Video</span>
           </a>
-        </span>
+        </span> -->
         <!-- Code Link. -->
         <span class="link-block">
           <a href="https://humanoid-touch-dream.github.io/"
@@ -99,7 +109,7 @@
             </a>
         </span>
         <!-- Dataset Link. -->
-        <span class="link-block">
+        <!-- <span class="link-block">
           <a href="https://humanoid-touch-dream.github.io/"
               class="external-link button is-normal is-rounded is-dark">
             <span class="icon">
@@ -107,7 +117,7 @@
             </span>
             <span>Data</span>
             </a>
-        </span>
+        </span> -->
       </div>
     </div>
     
@@ -118,13 +128,13 @@
       </div>
     </div>
     <p class="figure-caption">
-      <b>Humanoid TouchDream provides a data collection and training framework to learn contact-aware policies for versatile humanoid manipulation.</b>
+      <b>Humanoid Touch Dream provides a whole-body learning framework for versatile contact-rich humanoid loco-manipulation.</b>
     </p>
 
     <div class="tagline" id="abstract">Abstract.</div>
     <div class="paper-section">
       Humanoid robots promise general-purpose assistance, yet real-world humanoid loco-manipulation remains challenging because it requires <em>whole-body stability</em>, <em>dexterous hands</em>, and <em>contact-aware perception</em> under frequent contact changes.
-      In this work, we study <strong>dexterous, contact-rich humanoid loco-manipulation</strong>. We first develop an RL-based <strong>whole-body controller</strong> that provides stable lower-body and torso execution during complex manipulation. Built on this controller, we develop a <strong>whole-body humanoid data collection system</strong> that combines VR-based teleoperation with a unified reference frame for human-to-humanoid motion mapping, enabling efficient collection of real-world demonstrations. We then propose <strong>Humanoid Transformer with Touch Dreaming (HTD)</strong>, a multimodal encoder-decoder Transformer that treats touch as a first-class modality alongside multi-view vision and proprioception. HTD is trained with a single-stage behavioral cloning objective augmented with <em>touch dreaming</em>: in addition to predicting action chunks, the policy predicts future hand finger forces and future tactile <em>latents</em>, encouraging the shared Transformer trunk to learn contact-aware representations for dexterous interaction. Across five contact-rich tasks, <em>Insert-T</em>, <em>Book Organization</em>, <em>Towel Folding</em>, <em>Cat Litter Scooping</em>, and <em>Tea Serving</em>, our system enables versatile, high-dexterity humanoid manipulation in the real world.
+      In this work, we study <strong>dexterous, contact-rich humanoid loco-manipulation</strong>. We first develop an RL-based <strong>whole-body controller</strong> that provides stable lower-body and torso execution during complex manipulation. Built on this controller, we develop a <strong>whole-body humanoid data collection system</strong> that combines VR-based teleoperation with human-to-humanoid motion mapping, enabling efficient collection of real-world demonstrations. We then propose <strong>Humanoid Transformer with Touch Dreaming (HTD)</strong>, a multimodal encoder&ndash;decoder Transformer that models touch as a core modality alongside multi-view vision and proprioception. HTD is trained in a single stage with behavioral cloning augmented by <em>touch dreaming</em>: in addition to predicting action chunks, the policy predicts future hand-joint forces and future tactile latents, encouraging the shared Transformer trunk to learn contact-aware representations for dexterous interaction. Across five contact-rich tasks, <em>Insert-T</em>, <em>Book Organization</em>, <em>Towel Folding</em>, <em>Cat Litter Scooping</em>, and <em>Tea Serving</em>, HTD achieves a <strong>90.9%</strong> relative improvement in average success rate over the stronger baseline. Ablation results further show that latent-space tactile prediction is more effective than raw tactile prediction, yielding a <strong>30%</strong> relative gain in success rate. These results demonstrate that combining robust whole-body execution, scalable humanoid data collection, and predictive touch-centered learning enables versatile, high-dexterity humanoid manipulation in the real world.
     </div>
 
     <div class="tagline" id="policies">Autonomous Policies</div>
@@ -418,22 +428,18 @@
       </div>
     </div> -->
 
-    <!-- <div class="tagline" id="acknowledgements">Acknowledgements.</div>
-    <div class="paper-section" style="margin-top: -5px;">
-      <p>
-        We thank anonymous for making this website.
-      </p>
-    </div>
-
     <div class="paper-bibtex-code" id="BibTex">
       <div class="paper-bibtex-title">BibTeX</div>
-      <pre><code>@inproceedings{TouchDream,
-        title     = {Learning Dexterous Humanoid Manipulation with Touch Dreaming},
-        author    = {anonymous},
-        booktitle = {Proceedings of the Conference on Robot Learning (IROS)},
-        year      = {2026}
-      }</code></pre>
-    </div> -->
+      <pre><code>@misc{niu2026htd,
+      title={Learning Versatile Humanoid Manipulation with Touch Dreaming},
+      author={Yaru Niu and Zhenlong Fang and Binghong Chen and Shuai Zhou and Revanth Senthilkumaran and Hao Zhang and Bingqing Chen and Chen Qiu and H. Eric Tseng and Jonathan Francis and Ding Zhao},
+      year={2026},
+      eprint={2604.13015},
+      archivePrefix={arXiv},
+      primaryClass={cs.RO},
+      url={https://arxiv.org/abs/2604.13015},
+}</code></pre>
+    </div>
 
   </div> <!-- End of main-content div -->
 

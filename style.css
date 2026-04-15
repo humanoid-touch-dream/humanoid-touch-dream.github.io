@@ -76,6 +76,7 @@ body {
   letter-spacing: -1px;
   line-height: 1.1;
   margin-bottom: 10px;
+  text-align: center;
 }
 
 .sub-hero-text {
@@ -84,17 +85,18 @@ body {
   font-weight: 400;
   margin-bottom: 50px;
   line-height: 1.2;
+  text-align: center;
 }
 
 /* New style for authors */
 .authors {
-  font-family: 'Roboto Mono', monospace; /* Use a monospace font like taglines */
-  font-size: 16px; /* Slightly smaller font size */
-  color: #333; /* Dark grey color */
-  line-height: 1.6; /* Adjust line spacing */
-  margin-top: -32.5px; /* Reduce space below subtitle */
-  margin-bottom: 17.5px; /* Add space below authors */
-  text-align: left; /* Ensure left alignment */
+  font-family: 'Roboto Mono', monospace;
+  font-size: 16px;
+  color: #333;
+  line-height: 1.8;
+  margin-top: -32.5px;
+  margin-bottom: 17.5px;
+  text-align: center;
 }
 .authors span { /* Style for affiliation/notes */
     display: block; /* Put affiliation/note on new line */
