@@ -614,7 +614,7 @@ video.r2s-video-item {
   background-color: rgba(80, 80, 80, 0.8); /* Match gallery arrow background */
   padding: 20px;
   border-radius: 8px;
-  margin: 80px auto 56px; /* Spacing and centering */
+  margin: 20px auto 56px; /* Spacing and centering */
   max-width: 1000px;  /* Max width of the BibTeX box */
   box-sizing: border-box;
   font-size: 18px; /* Base font size for BibTeX */
@@ -633,12 +633,11 @@ video.r2s-video-item {
   white-space: pre-wrap;       /* Allows text to wrap */
   overflow-wrap: break-word;   /* Breaks long words if necessary (updated from word-wrap) */
   margin: 0;                   /* Remove default margin from pre tag */
-  padding: 0;
 }
 
 .paper-bibtex-code code {
-  display: block;
-  margin: 0;
+  margin-left: -24px;
+  margin-bottom: -30px;
   color: #f1f1f1;
   background-color: transparent;
   font-family: 'Courier New', Courier, monospace; /* Monospace font for code */
@@ -646,11 +645,6 @@ video.r2s-video-item {
   /* Color will be inherited from .bibtex-code */
 }
 /* --- End BibTeX Styling --- */
-
-.misc-section {
-  clear: both;
-  margin-top: 72px;
-}
 
 /* Import Yotube Video */
 .youtube-video-container {
