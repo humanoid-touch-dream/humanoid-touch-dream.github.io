@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "source": "IsaacLab-Decoupled-WBC/sim2mujoco/htd_controller.py",
+  "sim_dt": 0.005,
+  "control_dt": 0.02,
+  "control_decimation": 4,
+  "observation_dim": 60,
+  "action_dim": 15,
+  "observation_clip": 100.0,
+  "action_clip": 100.0,
+  "action_scale": 0.25,
+  "contact_force_threshold": 0.5,
+  "contact_history_steps": 3,
+  "floor_friction": 1.0,
+  "arm_rate_limit": 3.0,
+  "arm_stand_height": 0.72,
+  "preset_settle_s": 1.0,
+  "preset_command_ramp_s": 2.0,
+  "slider_command_ramp_s": 0.2,
+  "keyboard_command_ramp_s": 0.0,
+  "training_command_source": "logs/g1_flat/example/params/env.yaml",
+  "training_curriculum": {
+    "start_iter": 20000,
+    "end_iter": 60000,
+    "body_height_start": [0.5, 0.8],
+    "body_roll_start": [-0.4, 0.4],
+    "body_pitch_start": [-0.3, 1.0],
+    "body_yaw_start": [-0.65, 0.65]
+  },
+  "fall_pelvis_height": 0.18,
+  "fall_projected_gravity_z": -0.25,
+  "neutral_command": [0.0, 0.0, 0.0, 0.72, 0.0, 0.0, 0.0],
+  "commands": [
+    {"key": "vx", "label": "Forward", "unit": "m/s", "min": -1.5, "max": 1.5, "step": 0.05, "training": {"min": -0.5, "max": 0.5}},
+    {"key": "vy", "label": "Lateral", "unit": "m/s", "min": -1.5, "max": 1.5, "step": 0.05, "training": {"min": -0.5, "max": 0.5}},
+    {"key": "wz", "label": "Turn rate", "unit": "rad/s", "min": -2.57, "max": 2.57, "step": 0.01, "training": {"min": -1.57, "max": 1.57}},
+    {"key": "height", "label": "Torso height", "unit": "m", "min": 0.3, "max": 0.9, "step": 0.01, "training": {"start_min": 0.5, "start_max": 0.8, "min": 0.35, "max": 0.8}},
+    {"key": "roll", "label": "Torso roll", "unit": "rad", "min": -0.97, "max": 0.97, "step": 0.01, "training": {"start_min": -0.4, "start_max": 0.4, "min": -0.7, "max": 0.7}},
+    {"key": "pitch", "label": "Torso pitch", "unit": "rad", "min": -0.9, "max": 1.27, "step": 0.02, "training": {"start_min": -0.3, "start_max": 1.0, "min": -0.52, "max": 1.57}},
+    {"key": "body_yaw", "label": "Torso yaw", "unit": "rad", "min": -3.17, "max": 3.17, "step": 0.01, "training": {"start_min": -0.65, "start_max": 0.65, "min": -1.57, "max": 1.57}}
+  ],
+  "safe_presets": [
+    {"key": "forward", "label": "Forward", "command": [0.5, 0.0, 0.0, 0.72, 0.0, 0.0, 0.0]},
+    {"key": "backward", "label": "Backward", "command": [-0.5, 0.0, 0.0, 0.72, 0.0, 0.0, 0.0]},
+    {"key": "strafe_left", "label": "Strafe left", "command": [0.0, 1.0, 0.0, 0.72, 0.0, 0.0, 0.0]},
+    {"key": "turn_left", "label": "Turn left", "command": [0.0, 0.0, 1.5, 0.72, 0.0, 0.0, 0.0]},
+    {"key": "squat_bow_walk", "label": "Squat + bow", "command": [1.2, 0.0, 0.0, 0.4, 0.0, 0.8, 0.0]},
+    {"key": "twisted_walk", "label": "Twisted walk", "command": [0.3, 0.0, 0.0, 0.55, 0.0, 0.4, 1.2]},
+    {"key": "side_lean_walk", "label": "Side-lean walk", "command": [0.5, 0.25, 0.0, 0.5, 0.68, 0.25, 0.0]},
+    {"key": "pitch_strafe", "label": "Pitch strafe", "command": [0.0, 0.8, 0.0, 0.35, 0.0, 1.27, 0.0]},
+    {"key": "forward_backbend", "label": "Forward backbend", "command": [1.0, 0.0, 0.0, 0.55, 0.0, -0.9, -1.5]},
+    {"key": "backlook_reverse", "label": "Back-look reverse", "command": [-0.8, 0.0, 0.0, 0.72, 0.0, -0.4, -3.17]},
+    {"key": "spin_backbend", "label": "Spin + backbend", "command": [0.5, 0.0, 2.57, 0.6, 0.55, -0.7, -1.7]},
+    {"key": "tall_extension", "label": "Tall extension", "command": [-0.3, 0.0, 0.0, 0.9, 0.0, -0.9, 0.0]}
+  ],
+  "joint_names": [
+    "left_hip_pitch_joint", "left_hip_roll_joint", "left_hip_yaw_joint",
+    "left_knee_joint", "left_ankle_pitch_joint", "left_ankle_roll_joint",
+    "right_hip_pitch_joint", "right_hip_roll_joint", "right_hip_yaw_joint",
+    "right_knee_joint", "right_ankle_pitch_joint", "right_ankle_roll_joint",
+    "waist_yaw_joint", "waist_roll_joint", "waist_pitch_joint",
+    "left_shoulder_pitch_joint", "left_shoulder_roll_joint", "left_shoulder_yaw_joint",
+    "left_elbow_joint", "left_wrist_roll_joint", "left_wrist_pitch_joint",
+    "left_wrist_yaw_joint", "right_shoulder_pitch_joint", "right_shoulder_roll_joint",
+    "right_shoulder_yaw_joint", "right_elbow_joint", "right_wrist_roll_joint",
+    "right_wrist_pitch_joint", "right_wrist_yaw_joint"
+  ],
+  "default_joint_pos": [
+    -0.2, 0.0, 0.0, 0.42, -0.23, 0.0,
+    -0.2, 0.0, 0.0, 0.42, -0.23, 0.0,
+    0.0, 0.0, 0.0,
+    0.35, 0.18, 0.0, 0.87, 0.0, 0.0, 0.0,
+    0.35, -0.18, 0.0, 0.87, 0.0, 0.0, 0.0
+  ],
+  "kp": [
+    150, 150, 100, 150, 40, 40,
+    150, 150, 100, 150, 40, 40,
+    200, 150, 150,
+    100, 100, 50, 50, 20, 20, 20,
+    100, 100, 50, 50, 20, 20, 20
+  ],
+  "kd": [
+    3, 3, 2, 4, 2, 2,
+    3, 3, 2, 4, 2, 2,
+    4, 4, 4,
+    2, 2, 2, 2, 1, 1, 1,
+    2, 2, 2, 2, 1, 1, 1
+  ],
+  "effort_limit": [
+    88, 139, 88, 139, 50, 50,
+    88, 139, 88, 139, 50, 50,
+    88, 66, 66,
+    25, 25, 25, 25, 25, 5, 5,
+    25, 25, 25, 25, 25, 5, 5
+  ],
+  "arm_coupling": {
+    "gain": [
+      [-0.18992868065834045, -1.102351427078247, 0.4464784860610962, 0.1427413821220398],
+      [0.23371395468711853, -0.24575218558311462, 0.13921944797039032, -0.9781197905540466],
+      [-0.06560180336236954, -0.5467661023139954, 0.3918565809726715, -0.9287344217300415],
+      [-0.39086347818374634, -0.05814874544739723, -0.13095606863498688, 0.39138421416282654],
+      [0.11074209958314896, 0.025978025048971176, 0.2079380601644516, 0.4086606502532959],
+      [0.0, 0.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0, 0.0],
+      [0.18992868065834045, -1.102351427078247, -0.4464784860610962, 0.1427413821220398],
+      [0.23371395468711853, 0.24575218558311462, 0.13921944797039032, 0.9781197905540466],
+      [-0.06560180336236954, 0.5467661023139954, 0.3918565809726715, 0.9287344217300415],
+      [0.39086347818374634, -0.05814874544739723, 0.13095606863498688, 0.39138421416282654],
+      [0.11074209958314896, -0.025978025048971176, 0.2079380601644516, -0.4086606502532959],
+      [0.0, 0.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0, 0.0]
+    ],
+    "bias": [-0.20128226280212402, 0.6346420049667358, -0.14128975570201874, 0.2945312559604645, -0.02167990617454052, 0.0, 0.0, -0.20128226280212402, -0.6346420049667358, 0.14128975570201874, 0.2945312559604645, 0.02167990617454052, 0.0, 0.0],
+    "swing": [-0.24481962621212006, 0.010047265328466892, 0.0011953923385590315, -0.12093061953783035, 0.038197051733732224, 0.0, 0.0, 0.24481962621212006, 0.010047265328466892, 0.0011953922221437097, 0.12093061953783035, 0.038197048008441925, 0.0, 0.0],
+    "lo": [-2.790969133377075, 0.004864186514168978, -1.9163286685943604, -0.9385689496994019, -1.1022546291351318, 0.0, 0.0, -2.790969133377075, -1.5633889436721802, -1.9475418329238892, -0.9385689496994019, -1.0978178977966309, 0.0, 0.0],
+    "hi": [1.8709304332733154, 1.5633889436721802, 1.9475418329238892, 1.5561879873275757, 1.0978178977966309, 0.0, 0.0, 1.8709304332733154, -0.004864186514168978, 1.9163286685943604, 1.5561879873275757, 1.1022546291351318, 0.0, 0.0],
+    "frozen_indices": [5, 6, 12, 13]
+  },
+  "body_names": {
+    "pelvis": "pelvis",
+    "torso": "torso_link",
+    "left_foot": "left_ankle_roll_link",
+    "right_foot": "right_ankle_roll_link"
+  },
+  "mesh_files": [
+    "head_link.STL", "left_ankle_pitch_link.STL", "left_ankle_roll_link.STL",
+    "left_elbow_link.STL", "left_hip_pitch_link.STL", "left_hip_roll_link.STL",
+    "left_hip_yaw_link.STL", "left_knee_link.STL", "left_rubber_hand.STL",
+    "left_shoulder_pitch_link.STL", "left_shoulder_roll_link.STL",
+    "left_shoulder_yaw_link.STL", "left_wrist_pitch_link.STL",
+    "left_wrist_roll_link.STL", "left_wrist_yaw_link.STL", "logo_link.STL",
+    "pelvis.STL", "pelvis_contour_link.STL", "right_ankle_pitch_link.STL",
+    "right_ankle_roll_link.STL", "right_elbow_link.STL", "right_hip_pitch_link.STL",
+    "right_hip_roll_link.STL", "right_hip_yaw_link.STL", "right_knee_link.STL",
+    "right_rubber_hand.STL", "right_shoulder_pitch_link.STL",
+    "right_shoulder_roll_link.STL", "right_shoulder_yaw_link.STL",
+    "right_wrist_pitch_link.STL", "right_wrist_roll_link.STL",
+    "right_wrist_yaw_link.STL", "torso_link.STL", "waist_roll_link.STL",
+    "waist_support_link.STL", "waist_yaw_link.STL"
+  ]
+}

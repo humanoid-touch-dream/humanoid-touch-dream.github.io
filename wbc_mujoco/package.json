@@ -1,0 +1,22 @@
+{
+  "name": "htd-wbc-mujoco-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "node --test tests/*.test.mjs",
+    "test:native": "../../../IsaacLab-Decoupled-WBC/.venv/bin/python tests/compare_native.py",
+    "check": "npm test && npm run test:native && npm run build"
+  },
+  "dependencies": {
+    "mujoco-js": "0.0.7",
+    "onnxruntime-web": "1.21.1",
+    "three": "0.181.0"
+  },
+  "devDependencies": {
+    "vite": "6.4.3"
+  }
+}

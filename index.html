@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Humanoid Touch Dream</title>
-  <link rel="icon" href="./figs/egox_iconv2.png" type="image/png">
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./css/bulma.min.css">
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
@@ -19,7 +19,8 @@
       <li><a href="#abstract">Abstract</a></li>
       <li><a href="#policies"> Autonomous Policies</a></li>
       <li><a href="#dreamtouch"> Touch Dreaming</a></li>
-      <li><a href="#wbc"> Whole-Body Controllor</a></li>
+      <li><a href="#wbc"> Whole-Body Controller</a></li>
+      <li><a href="#wbc-live"> Interactive WBC</a></li>
       <li><a href="#acknowledgements">Acknowledgements</a></li>
       <li><a href="#BibTex">Citation</a></li>
       <li><a href="#misc">Miscellaneous</a></li>
@@ -435,6 +436,52 @@
     <p class="figure-caption">
       <b>Tracking Error Comparison.</b> Our whole-body controller achieves the lowest tracking error across most metrics compared to AMO (Li et al., RSS 2025) and FALCON (Zhang et al., L4DC 2026). Bold values indicate the best result in each row.
     </p>
+
+    <section class="wbc-live-section" id="wbc-live" aria-labelledby="wbc-live-title">
+      <div class="wbc-live-copy">
+        <span class="wbc-live-kicker">Interactive demo</span>
+        <h3 id="wbc-live-title">Drive the HTD controller in MuJoCo</h3>
+        <p>
+          Run the exported whole-body policy entirely in your browser. Choose a
+          preset or explore seven motion commands; teal bands show the ranges
+          used during training.
+        </p>
+        <div class="wbc-live-actions">
+          <button type="button" class="wbc-live-launch" id="wbc-live-launch">
+            Launch interactive demo
+          </button>
+          <a class="wbc-live-open" href="./wbc_mujoco/dist/index.html" target="_blank" rel="noopener">
+            Open in new tab
+          </a>
+        </div>
+      </div>
+      <div class="wbc-live-frame-wrap" id="wbc-live-frame-wrap" hidden>
+        <iframe
+          id="wbc-live-frame"
+          title="Interactive HTD whole-body controller in MuJoCo"
+          data-src="./wbc_mujoco/dist/index.html"
+          allow="fullscreen">
+        </iframe>
+      </div>
+    </section>
+
+    <script>
+    (function() {
+      var launch = document.getElementById('wbc-live-launch');
+      var wrap = document.getElementById('wbc-live-frame-wrap');
+      var frame = document.getElementById('wbc-live-frame');
+      if (!launch || !wrap || !frame) return;
+      launch.addEventListener('click', function() {
+        if (!frame.getAttribute('src')) frame.setAttribute('src', frame.dataset.src);
+        var willShow = wrap.hidden;
+        wrap.hidden = !willShow;
+        launch.textContent = willShow ? 'Hide interactive demo' : 'Show interactive demo';
+        launch.setAttribute('aria-expanded', String(willShow));
+        if (willShow) wrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+      launch.setAttribute('aria-expanded', 'false');
+    })();
+    </script>
 
     <!-- <div class="tagline" id="touchdreaming">Humanoid Touch Dream.</div> -->
     <!-- <div class="column has-text-centered">
