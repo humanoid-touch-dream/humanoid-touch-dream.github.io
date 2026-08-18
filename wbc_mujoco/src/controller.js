@@ -86,7 +86,11 @@ export class HtdBrowserController {
     ort.env.wasm.numThreads = 1;
     ort.env.wasm.proxy = false;
     ort.env.wasm.wasmPaths = new URL("vendor/ort/", baseUrl).href;
-    const policy = await ort.InferenceSession.create(new URL("policy.onnx", assetRoot).href, {
+    const policyUrl = new URL("policy.onnx", assetRoot);
+    if (metadata.policy?.onnx_sha256) {
+      policyUrl.searchParams.set("v", metadata.policy.onnx_sha256.slice(0, 16));
+    }
+    const policy = await ort.InferenceSession.create(policyUrl.href, {
       executionProviders: ["wasm"],
       graphOptimizationLevel: "all",
     });

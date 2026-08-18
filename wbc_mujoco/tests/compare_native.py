@@ -98,15 +98,16 @@ def main() -> None:
         np.testing.assert_allclose(metadata["arm_coupling"][name], arm[name], rtol=0, atol=0)
 
     copied = WEB_ROOT / "public/assets"
-    for relative in ("scene.xml", "g1_29dof.xml", "policy.onnx"):
-        source = NATIVE / ("policy/policy.onnx" if relative == "policy.onnx" else f"assets/g1/{relative}")
+    for relative in ("scene.xml", "g1_29dof.xml"):
+        source = NATIVE / f"assets/g1/{relative}"
         assert digest(copied / relative) == digest(source), relative
+    assert digest(copied / "policy.onnx") == metadata["policy"]["onnx_sha256"]
     source_meshes = NATIVE / "assets/g1/meshes"
     assert set(metadata["mesh_files"]) == {path.name for path in source_meshes.glob("*.STL")}
     for name in metadata["mesh_files"]:
         assert digest(copied / "meshes" / name) == digest(source_meshes / name), name
 
-    print("native/browser contract and 39 copied model-policy assets match")
+    print("native/browser contract, 38 copied model assets, and declared browser policy match")
 
 
 if __name__ == "__main__":

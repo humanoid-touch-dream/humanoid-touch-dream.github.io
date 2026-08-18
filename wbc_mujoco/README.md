@@ -16,11 +16,17 @@ Open the URL printed by Vite, normally `http://127.0.0.1:5173/`. The build uses
 relative URLs and can later be embedded in the HTD project page as a static iframe.
 
 In the full HTD workspace, `npm run check` also compares the browser contract and
-all copied assets against the sibling `IsaacLab-Decoupled-WBC/sim2mujoco` tree,
-then produces the local `dist/` build. A standalone website checkout can use
-`npm test && npm run build` without that sibling parity source.
+copied robot assets against the sibling `IsaacLab-Decoupled-WBC/sim2mujoco` tree,
+checks the browser policy against its declared hash, then produces the local
+`dist/` build. A standalone website checkout can use `npm test && npm run build`
+without that sibling parity source.
 
 ## Parity contract
+
+The current browser policy is the teacher actor from
+`ffw0p1_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8` at iteration
+`211500`, fine-tuned with flat-foot reward weight `0.10`. Its source-checkpoint
+and exported-ONNX hashes are pinned in `public/assets/contract.json`.
 
 - MuJoCo physics: 200 Hz (`dt=0.005`)
 - policy/control: 50 Hz (four physics steps per inference)

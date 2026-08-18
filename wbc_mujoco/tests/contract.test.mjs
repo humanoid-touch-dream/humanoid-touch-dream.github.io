@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
@@ -15,6 +16,16 @@ import {
 const metadata = JSON.parse(
   await readFile(new URL("../public/assets/contract.json", import.meta.url), "utf8"),
 );
+
+test("browser policy identity and bytes are pinned", async () => {
+  assert.equal(metadata.schema_version, 2);
+  assert.equal(metadata.policy.kind, "teacher");
+  assert.equal(metadata.policy.checkpoint_iteration, 211500);
+  assert.equal(metadata.policy.flat_foot_reward_weight, 0.1);
+  assert.equal(metadata.policy.onnx_opset, 11);
+  const policy = await readFile(new URL("../public/assets/policy.onnx", import.meta.url));
+  assert.equal(createHash("sha256").update(policy).digest("hex"), metadata.policy.onnx_sha256);
+});
 
 test("browser metadata keeps the native dimensions and timing", () => {
   assert.equal(metadata.joint_names.length, 29);

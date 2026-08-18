@@ -27,8 +27,9 @@ the production bundle published with this site. Rebuild it whenever the browser
 demo source or assets change.
 
 When this repository is beside `IsaacLab-Decoupled-WBC` in the HTD workspace,
-`npm run check` additionally verifies the copied model, policy, and controller
-contract against the native `sim2mujoco` implementation.
+`npm run check` additionally verifies the copied robot model and controller
+contract against the native `sim2mujoco` implementation, and checks the browser
+policy against its declared provenance hash.
 
 The production bundle includes the MuJoCo model, HTD policy, and the dependency
 notices listed in `wbc_mujoco/public/licenses/THIRD_PARTY_NOTICES.txt`.
