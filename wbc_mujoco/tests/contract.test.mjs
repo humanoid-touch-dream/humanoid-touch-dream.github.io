@@ -21,23 +21,57 @@ test("browser policy identity and bytes are pinned", async () => {
   assert.equal(metadata.schema_version, 2);
   assert.equal(metadata.policy.schema_version, 1);
   assert.equal(metadata.policy.kind, "teacher");
-  assert.equal(metadata.policy.checkpoint_iteration, 212500);
-  assert.equal(metadata.policy.flat_foot_reward_weight, 0.175);
+  assert.equal(metadata.policy.run_name, "ffw0p2_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8");
+  assert.equal(metadata.policy.checkpoint_filename, "model_210500.pt");
+  assert.equal(metadata.policy.checkpoint_iteration, 210500);
+  assert.equal(
+    metadata.policy.checkpoint_sha256,
+    "408e2f5176a72cdd98bd59e7724ab6f11233cb18e3a8dabf099d49585f7eb063",
+  );
+  assert.equal(metadata.policy.flat_foot_reward_weight, 0.2);
   assert.equal(metadata.policy.onnx_opset, 11);
   const policy = await readFile(new URL("../public/assets/policy.onnx", import.meta.url));
   assert.equal(createHash("sha256").update(policy).digest("hex"), metadata.policy.onnx_sha256);
 });
 
 test("webpage presets are pinned independently from the bundled native policy", () => {
-  assert.equal(metadata.safe_presets.length, 12);
+  const expectedPresets = [
+    ["forward", [0.5, 0, 0, 0.72, 0, 0, 0]],
+    ["backward", [-0.5, 0, 0, 0.72, 0, 0, 0]],
+    ["strafe_left", [0.1, 0.9, 0, 0.72, -0.1, 0.04, 0]],
+    ["turn_left", [0, 0, 1.5, 0.72, 0, 0, 0]],
+    ["squat_bow_walk", [1.2, 0.1, 0, 0.4, 0.1, 0.74, 0.2]],
+    ["twisted_walk", [0.45, 0.05, 0, 0.62, 0, 0.48, 1.1]],
+    ["side_lean_walk", [0.5, 0.35, 0, 0.47, 0.68, 0.24, -0.2]],
+    ["pitch_strafe", [0, 0.8, 0, 0.35, 0, 1, 0]],
+    ["forward_backbend", [0.7, 0, 0, 0.5, 0, -0.5, 0]],
+    ["backlook_reverse", [-0.7, -0.1, 0, 0.64, -0.1, -0.56, -2.4]],
+    ["spin_backbend", [0.25, -0.05, 1.5, 0.65, 0.4, -0.6, -1.4]],
+    ["tall_extension", [-0.3, 0, 0, 0.85, 0, -0.9, -0.25]],
+  ];
+  assert.equal(metadata.safe_presets.length, expectedPresets.length);
   const keys = new Set(metadata.safe_presets.map((preset) => preset.key));
+  const labels = new Set(metadata.safe_presets.map((preset) => preset.label));
   assert.equal(keys.size, metadata.safe_presets.length);
+  assert.equal(labels.size, metadata.safe_presets.length);
   for (const preset of metadata.safe_presets) {
+    assert.ok(preset.label.trim().length > 0, preset.key);
     assert.equal(preset.command.length, 7, preset.key);
     assert.ok(preset.command.every(Number.isFinite), preset.key);
+    preset.command.forEach((value, index) => {
+      const spec = metadata.commands[index];
+      const gridIndex = (value - spec.min) / spec.step;
+      assert.ok(Math.abs(gridIndex - Math.round(gridIndex)) < 1e-8, `${preset.key}:${spec.key}`);
+    });
   }
-  const forwardBackbend = metadata.safe_presets.find((preset) => preset.key === "forward_backbend");
-  assert.deepEqual(forwardBackbend.command, [0.8, 0, 0, 0.55, 0, -0.5, 0]);
+  assert.deepEqual(
+    metadata.safe_presets.map(({ key, command }) => [key, command]),
+    expectedPresets,
+  );
+  const turningPresets = new Set(["turn_left", "spin_backbend"]);
+  for (const preset of metadata.safe_presets) {
+    assert.equal(preset.command[2] !== 0, turningPresets.has(preset.key), preset.key);
+  }
 });
 
 test("browser metadata keeps the native dimensions and timing", () => {

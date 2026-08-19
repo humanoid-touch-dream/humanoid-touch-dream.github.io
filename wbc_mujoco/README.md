@@ -24,9 +24,11 @@ without that sibling parity source.
 ## Parity contract
 
 The current browser policy is the teacher actor from
-`ffw0p175_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8` at iteration
-`212500`, fine-tuned with flat-foot reward weight `0.175`. It was selected for
-strong in-distribution tracking and a near-flat neutral stance. Its source-checkpoint
+`ffw0p2_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8` at iteration
+`210500`, fine-tuned with flat-foot reward weight `0.20`. It was selected as a
+balanced interactive-demo checkpoint: it retains a flat, symmetric neutral stance
+and reduces unintended turning during ordinary lateral locomotion, with a modest
+in-distribution tracking tradeoff relative to the previous `0.175` webpage policy. Its source-checkpoint
 and exported-ONNX hashes are pinned in `public/assets/contract.json`.
 This policy is specific to the webpage demo. The sibling WBC repository keeps its
 bundled teacher, student, and native MuJoCo example on v7 until a matching student
@@ -48,6 +50,10 @@ has been trained.
 Only presets that passed native MuJoCo screening for this policy and an independent
 browser replay are exposed as named presets. The sliders deliberately retain the full Isaac **play** ranges, so arbitrary
 slider combinations are exploratory rather than validated.
+The named zero-turn-rate locomotion presets were tuned specifically for this
+checkpoint to reduce integrated world-heading drift and cross-track motion; they do
+not rely on a hidden counter-turn command. Every preset command also lies exactly on
+the corresponding browser slider grid.
 
 The compact legend identifies the teal bands as the checkpoint's final configured
 training envelope. The bundled v7 example has the same command ranges and provides
