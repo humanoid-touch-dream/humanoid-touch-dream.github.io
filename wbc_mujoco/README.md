@@ -17,16 +17,20 @@ relative URLs and can later be embedded in the HTD project page as a static ifra
 
 In the full HTD workspace, `npm run check` also compares the browser contract and
 copied robot assets against the sibling `IsaacLab-Decoupled-WBC/sim2mujoco` tree,
-checks the browser policy against its declared hash, then produces the local
+checks the independent webpage policy against its declared hash, then produces the local
 `dist/` build. A standalone website checkout can use `npm test && npm run build`
 without that sibling parity source.
 
 ## Parity contract
 
 The current browser policy is the teacher actor from
-`ffw0p1_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8` at iteration
-`211500`, fine-tuned with flat-foot reward weight `0.10`. Its source-checkpoint
+`ffw0p175_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8` at iteration
+`212500`, fine-tuned with flat-foot reward weight `0.175`. It was selected for
+strong in-distribution tracking and a near-flat neutral stance. Its source-checkpoint
 and exported-ONNX hashes are pinned in `public/assets/contract.json`.
+This policy is specific to the webpage demo. The sibling WBC repository keeps its
+bundled teacher, student, and native MuJoCo example on v7 until a matching student
+has been trained.
 
 - MuJoCo physics: 200 Hz (`dt=0.005`)
 - policy/control: 50 Hz (four physics steps per inference)
@@ -35,18 +39,20 @@ and exported-ONNX hashes are pinned in `public/assets/contract.json`.
 - zero joint damping/friction loss, armature `0.01`, robot self-collision disabled
 - two foot-contact bits using a three-physics-step force history at `0.5 N`
 - coupled, rate-limited arms from the native exported fit
-- validated preset buttons reset, settle at neutral for one second, then use the
-  native validator's two-second smootherstep transition
+- validated preset buttons reset, settle at neutral for one second, then use a
+  two-second smootherstep transition
 - keyboard steps are applied on the next 50 Hz control tick; slider changes use
   a short 0.20-second transition to avoid abrupt large command jumps
 - play-limit sliders with checkpoint training envelopes shown as teal bands
 
-Only presets that passed the current native MuJoCo screen are exposed as named
-presets. The sliders deliberately retain the full Isaac **play** ranges, so arbitrary
+Only presets that passed native MuJoCo screening for this policy and an independent
+browser replay are exposed as named presets. The sliders deliberately retain the full Isaac **play** ranges, so arbitrary
 slider combinations are exploratory rather than validated.
 
 The compact legend identifies the teal bands as the checkpoint's final configured
-training envelope. Exact per-axis ranges and the iteration 20,000–60,000 posture
+training envelope. The bundled v7 example has the same command ranges and provides
+the portable range/curriculum reference used by the parity check. Exact per-axis
+ranges and the iteration 20,000–60,000 posture
 curriculum remain available to assistive technology and as range-map tooltips.
 Torso pitch is an important exception to the usual wider-play pattern: training
 reached `+1.57` rad while the play slider stops at `+1.27` rad, so its band ends

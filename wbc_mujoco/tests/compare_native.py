@@ -36,9 +36,6 @@ from htd_controller import (  # noqa: E402
     OBS_DIM,
     SIM_DT,
 )
-from validate_mujoco import PRESETS  # noqa: E402
-
-
 def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -88,11 +85,6 @@ def main() -> None:
             curriculum[curriculum_key]["start_range"], rtol=0, atol=0,
         )
 
-    browser_presets = {item["key"]: item["command"] for item in metadata["safe_presets"]}
-    assert set(browser_presets) == set(PRESETS)
-    for name, command in PRESETS.items():
-        np.testing.assert_allclose(browser_presets[name], command, rtol=0, atol=5e-8)
-
     arm = np.load(NATIVE / "assets/arm_coupling.npz", allow_pickle=False)
     for name in ("gain", "bias", "swing", "lo", "hi"):
         np.testing.assert_allclose(metadata["arm_coupling"][name], arm[name], rtol=0, atol=0)
@@ -107,7 +99,7 @@ def main() -> None:
     for name in metadata["mesh_files"]:
         assert digest(copied / "meshes" / name) == digest(source_meshes / name), name
 
-    print("native/browser contract, 38 copied model assets, and declared browser policy match")
+    print("native/browser controller contract, 38 copied model assets, and browser policy provenance match")
 
 
 if __name__ == "__main__":

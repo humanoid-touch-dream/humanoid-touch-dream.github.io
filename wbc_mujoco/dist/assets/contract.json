@@ -2,16 +2,17 @@
   "schema_version": 2,
   "source": "IsaacLab-Decoupled-WBC/sim2mujoco/htd_controller.py",
   "policy": {
+    "schema_version": 1,
     "kind": "teacher",
-    "run_name": "ffw0p1_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8",
-    "checkpoint_filename": "ffw0p1_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8__model_211500.pt",
-    "checkpoint_iteration": 211500,
-    "checkpoint_sha256": "c16bcee71a7bddec4567b29cf18ef8568cc7dfaac637a57c0de0ccb66bd3d951",
+    "run_name": "ffw0p175_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8",
+    "checkpoint_filename": "model_212500.pt",
+    "checkpoint_iteration": 212500,
+    "checkpoint_sha256": "f66484126106476183354cf964ff24afce104ca1a1bd707c5cc84cf0f15c33d5",
     "seed_run_name": "ci20-60_wrp150-4_hpr150-3_fcs0p5_jtl100_e12288_s1_v7",
     "seed_checkpoint_iteration": 204999,
-    "flat_foot_reward_weight": 0.1,
+    "flat_foot_reward_weight": 0.175,
     "onnx_opset": 11,
-    "onnx_sha256": "432d16fbc5b579849924af815be8678f04d20c38ff4ff61318186fdfc6fb7e3e"
+    "onnx_sha256": "5d6d00ecbca33bb40f59eb76e47fb4688f7173b2576de9cca804c7492faaed82"
   },
   "sim_dt": 0.005,
   "control_dt": 0.02,
@@ -30,7 +31,7 @@
   "preset_command_ramp_s": 2.0,
   "slider_command_ramp_s": 0.2,
   "keyboard_command_ramp_s": 0.0,
-  "training_command_source": "logs/g1_flat/example/params/env.yaml",
+  "training_command_source": "example/params/env.yaml",
   "training_curriculum": {
     "start_iter": 20000,
     "end_iter": 60000,
@@ -60,7 +61,7 @@
     {"key": "twisted_walk", "label": "Twisted walk", "command": [0.3, 0.0, 0.0, 0.55, 0.0, 0.4, 1.2]},
     {"key": "side_lean_walk", "label": "Side-lean walk", "command": [0.5, 0.25, 0.0, 0.5, 0.68, 0.25, 0.0]},
     {"key": "pitch_strafe", "label": "Pitch strafe", "command": [0.0, 0.8, 0.0, 0.35, 0.0, 1.27, 0.0]},
-    {"key": "forward_backbend", "label": "Forward backbend", "command": [1.0, 0.0, 0.0, 0.55, 0.0, -0.9, -1.5]},
+    {"key": "forward_backbend", "label": "Forward backbend", "command": [0.8, 0.0, 0.0, 0.55, 0.0, -0.5, 0.0]},
     {"key": "backlook_reverse", "label": "Back-look reverse", "command": [-0.8, 0.0, 0.0, 0.72, 0.0, -0.4, -3.17]},
     {"key": "spin_backbend", "label": "Spin + backbend", "command": [0.5, 0.0, 2.57, 0.6, 0.55, -0.7, -1.7]},
     {"key": "tall_extension", "label": "Tall extension", "command": [-0.3, 0.0, 0.0, 0.9, 0.0, -0.9, 0.0]}

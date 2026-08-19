@@ -4,7 +4,7 @@ Checked on 2026-08-18 with Google Chrome headless/SwiftShader.
 
 ## Static and contract checks
 
-- `npm run check`: pass (11 JavaScript contract tests, native metadata/asset sync,
+- `npm run check`: pass (12 JavaScript contract tests, native controller/model-asset parity,
   production Vite build)
 - interaction timing is separated by source: keyboard `0.00 s`, sliders `0.20 s`,
   validated presets `2.00 s` after their one-second neutral settle
@@ -16,10 +16,12 @@ Checked on 2026-08-18 with Google Chrome headless/SwiftShader.
 - `npm audit --omit=dev`: 0 vulnerabilities
 - the two MJCF XMLs and all 36 referenced meshes match the native `sim2mujoco`
   copies byte-for-byte
-- browser policy: `ffw0p1_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8`
-  teacher at iteration `211500`; checkpoint SHA-256 `c16bcee71a7bddec4567b29cf18ef8568cc7dfaac637a57c0de0ccb66bd3d951`
-  and ONNX SHA-256 `432d16fbc5b579849924af815be8678f04d20c38ff4ff61318186fdfc6fb7e3e`
+- browser policy: `ffw0p175_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8`
+  teacher at iteration `212500`; checkpoint SHA-256 `f66484126106476183354cf964ff24afce104ca1a1bd707c5cc84cf0f15c33d5`
+  and ONNX SHA-256 `5d6d00ecbca33bb40f59eb76e47fb4688f7173b2576de9cca804c7492faaed82`
   match the declared contract provenance
+- the webpage policy is intentionally independent from the sibling WBC repository's
+  bundled v7 teacher/student/native-policy example
 - pinned stack: `mujoco-js@0.0.7`, `onnxruntime-web@1.21.1`,
   `three@0.181.0`, `vite@6.4.3`
 
@@ -28,8 +30,9 @@ Checked on 2026-08-18 with Google Chrome headless/SwiftShader.
 - browser MuJoCo runtime: 3.3.8
 - native Python MuJoCo runtime: 3.3.7
 - initial 60-value observation: exact match
-- initial 15-value CPU/WASM policy action: maximum absolute difference
-  `5.960464477539062e-7` (mean `1.7831722232131142e-7`)
+- initial 15-value policy action from the same webpage ONNX under CPU/WASM:
+  maximum absolute difference
+  `7.152557373046875e-7` (mean `1.4174729301430489e-7`)
 - production build loaded the model, rendered the robot, initialized ONNX Runtime,
   and completed the query-driven QA replay
 
@@ -41,20 +44,23 @@ browser stability screen below is separate from native validation.
 Every validated preset ran 400 policy ticks / 8 simulated seconds using the one-second
 neutral settle and two-second smootherstep ramp. None triggered the fall detector.
 
-| Preset | Min pelvis z | Final pelvis z | Fell |
-|---|---:|---:|:---:|
-| forward | 0.649433 | 0.680893 | no |
-| backward | 0.649433 | 0.681333 | no |
-| strafe_left | 0.649433 | 0.687907 | no |
-| turn_left | 0.649433 | 0.667414 | no |
-| squat_bow_walk | 0.376175 | 0.394725 | no |
-| twisted_walk | 0.508815 | 0.514664 | no |
-| side_lean_walk | 0.458292 | 0.467748 | no |
-| pitch_strafe | 0.358570 | 0.376484 | no |
-| forward_backbend | 0.604733 | 0.627112 | no |
-| backlook_reverse | 0.649433 | 0.668325 | no |
-| spin_backbend | 0.644357 | 0.696521 | no |
-| tall_extension | 0.649433 | 0.747707 | no |
+| Preset | Min pelvis z | Final pelvis z | Final contact L/R | Fell |
+|---|---:|---:|:---:|:---:|
+| forward | 0.644295 | 0.672969 | 0 / 1 | no |
+| backward | 0.644295 | 0.682761 | 1 / 1 | no |
+| strafe_left | 0.644295 | 0.685768 | 0 / 1 | no |
+| turn_left | 0.644295 | 0.663650 | 1 / 0 | no |
+| squat_bow_walk | 0.376307 | 0.383501 | 1 / 0 | no |
+| twisted_walk | 0.495603 | 0.501828 | 1 / 0 | no |
+| side_lean_walk | 0.447966 | 0.454352 | 1 / 0 | no |
+| pitch_strafe | 0.358421 | 0.369653 | 0 / 1 | no |
+| forward_backbend | 0.582257 | 0.660779 | 1 / 0 | no |
+| backlook_reverse | 0.644295 | 0.674012 | 1 / 0 | no |
+| spin_backbend | 0.637819 | 0.697882 | 1 / 1 | no |
+| tall_extension | 0.644295 | 0.745867 | 1 / 1 | no |
+
+The revised `forward_backbend` command is `[0.8, 0, 0, 0.55, 0, -0.5, 0]`;
+it removes the previous uncommanded curved path while retaining a clear backbend.
 
 The local-only QA hook is `?qaPreset=<preset-key>&qaTicks=400`; it writes the initial
 probe and final replay summary to the hidden `#runtime-probe` element for automation.
