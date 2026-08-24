@@ -294,10 +294,21 @@ function handleKeyboard(event) {
 async function boot() {
   try {
     const baseUrl = new URL(import.meta.env.BASE_URL, window.location.href);
-    controller = await HtdBrowserController.create({ baseUrl, onProgress: setLoadingMessage });
+    const query = new URLSearchParams(window.location.search);
+    const declaredRelease = document.querySelector('meta[name="htd-release-id"]')?.content;
+    const releaseId = query.get("v") || declaredRelease;
+    controller = await HtdBrowserController.create({
+      baseUrl,
+      onProgress: setLoadingMessage,
+      releaseId,
+    });
     const initialProbe = await controller.initialProbe();
     const runtimeProbe = {
       mujocoVersion: controller.version,
+      releaseId: controller.metadata.release_id,
+      policyRun: controller.metadata.policy.run_name,
+      policyCheckpoint: controller.metadata.policy.checkpoint_filename,
+      policyOnnxSha256: controller.metadata.policy.onnx_sha256,
       ...initialProbe,
     };
     buildControls(controller.metadata);
@@ -308,7 +319,6 @@ async function boot() {
       pelvisBodyId: controller.pelvisBodyId,
     });
     enableControls(true);
-    const query = new URLSearchParams(window.location.search);
     const qaPresetKey = query.get("qaPreset");
     const qaPreset = controller.metadata.safe_presets.find((preset) => preset.key === qaPresetKey);
     if (qaPreset) {

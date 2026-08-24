@@ -20,6 +20,11 @@ async function fetchChecked(url, kind = "arrayBuffer") {
   return kind === "text" ? response.text() : response.arrayBuffer();
 }
 
+async function sha256Hex(payload) {
+  const digest = await crypto.subtle.digest("SHA-256", payload);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
 function ensureMemfsDirectory(mujoco, path) {
   const parts = path.split("/").filter(Boolean);
   let current = "";
@@ -65,10 +70,15 @@ function readIndexed(source, indices) {
 }
 
 export class HtdBrowserController {
-  static async create({ baseUrl, onProgress }) {
+  static async create({ baseUrl, onProgress, releaseId }) {
     const assetRoot = new URL("assets/", baseUrl);
     onProgress?.("Loading the HTD control contract…");
-    const metadata = JSON.parse(await fetchChecked(new URL("contract.json", assetRoot), "text"));
+    const contractUrl = new URL("contract.json", assetRoot);
+    if (releaseId) contractUrl.searchParams.set("v", releaseId);
+    const metadata = JSON.parse(await fetchChecked(contractUrl, "text"));
+    if (releaseId && metadata.release_id !== releaseId) {
+      throw new Error(`Expected release ${releaseId}, but the server returned ${metadata.release_id || "an unversioned contract"}.`);
+    }
 
     onProgress?.("Loading MuJoCo WebAssembly…");
     const mujoco = await loadMujoco();
@@ -90,7 +100,14 @@ export class HtdBrowserController {
     if (metadata.policy?.onnx_sha256) {
       policyUrl.searchParams.set("v", metadata.policy.onnx_sha256.slice(0, 16));
     }
-    const policy = await ort.InferenceSession.create(policyUrl.href, {
+    const policyPayload = await fetchChecked(policyUrl);
+    if (metadata.policy?.onnx_sha256) {
+      const policySha256 = await sha256Hex(policyPayload);
+      if (policySha256 !== metadata.policy.onnx_sha256) {
+        throw new Error(`The ONNX policy SHA-256 is ${policySha256}, expected ${metadata.policy.onnx_sha256}.`);
+      }
+    }
+    const policy = await ort.InferenceSession.create(policyPayload, {
       executionProviders: ["wasm"],
       graphOptimizationLevel: "all",
     });

@@ -24,12 +24,18 @@ without that sibling parity source.
 ## Parity contract
 
 The current browser policy is the teacher actor from
-`ffw0p2_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8` at iteration
-`210500`, fine-tuned with flat-foot reward weight `0.20`. It was selected as a
-balanced interactive-demo checkpoint: it retains a flat, symmetric neutral stance
-and reduces unintended turning during ordinary lateral locomotion, with a modest
-in-distribution tracking tradeoff relative to the previous `0.175` webpage policy. Its source-checkpoint
-and exported-ONNX hashes are pinned in `public/assets/contract.json`.
+`rhe0p5_ft50k_ci20-60_wrp150-4_hpr150-3_fcs0p5_jtl100_e12288_s1_v9` at iteration
+`240000`, fine-tuned with flat-foot reward weight `0.175`. Among non-standing
+moving environments, its command mixture uses 50% heading-controlled environments;
+among the remaining direct-yaw environments, 50% receive an exact zero turn-rate
+command. It was selected for this browser showcase after screening every retained
+v9 checkpoint: it improves common-grid and high-speed tracking, perturbation
+performance, neutral full-sole contact, and broad path straightness over the
+previous webpage policy. It is not universally stronger—the previous v8 policy
+responds better to some low-speed and random two-axis in-distribution commands—so
+the named catalog below is validated independently for this checkpoint. Its
+source-checkpoint and exported-ONNX hashes are pinned in
+`public/assets/contract.json`.
 This policy is specific to the webpage demo. The sibling WBC repository keeps its
 bundled teacher, student, and native MuJoCo example on v7 until a matching student
 has been trained.
@@ -47,17 +53,29 @@ has been trained.
   a short 0.20-second transition to avoid abrupt large command jumps
 - play-limit sliders with checkpoint training envelopes shown as teal bands
 
-Only presets that passed native MuJoCo screening for this policy and an independent
-browser replay are exposed as named presets. The sliders deliberately retain the full Isaac **play** ranges, so arbitrary
-slider combinations are exploratory rather than validated.
-The named zero-turn-rate locomotion presets were tuned specifically for this
+The named catalog passed native MuJoCo stability/semantic screening and an
+independent browser replay for this policy. The sliders deliberately retain the full
+Isaac **play** ranges, so arbitrary slider combinations are exploratory rather than
+validated.
+The named zero-turn-rate locomotion presets were retuned specifically for this
 checkpoint to reduce integrated world-heading drift and cross-track motion; they do
-not rely on a hidden counter-turn command. Every preset command also lies exactly on
-the corresponding browser slider grid.
+not rely on a hidden counter-turn command. Catalog 3 preserves the previous twelve
+motion labels and their pose/direction identities instead of selecting arbitrary
+poses solely for the lowest tracking score. Forward, backward, and left strafe use
+pure-axis planar commands. Styled motions keep the same qualitative pose and travel
+direction, with small, visible planar-command adjustments where needed to make their
+achieved paths visually straighter. In particular, Squat + bow uses
+`vy=-0.05 m/s`, and Pitch strafe uses `vx=+0.15 m/s`; the sliders show these values,
+and there is no hidden heading controller. `Tall extension` is retained as a
+backward walk with the torso height lowered from `0.85 m` to the neutral `0.72 m`.
+Its label therefore refers to the strong back-extension pose rather than an elevated
+torso target. Every preset command lies exactly on the corresponding browser slider
+grid.
 
 The compact legend identifies the teal bands as the checkpoint's final configured
 training envelope. The bundled v7 example has the same command ranges and provides
-the portable range/curriculum reference used by the parity check. Exact per-axis
+the portable range/curriculum reference used by the parity check; it does not
+describe this v9 checkpoint's heading/direct-yaw population mixture. Exact per-axis
 ranges and the iteration 20,000–60,000 posture
 curriculum remain available to assistive technology and as range-map tooltips.
 Torso pitch is an important exception to the usual wider-play pattern: training

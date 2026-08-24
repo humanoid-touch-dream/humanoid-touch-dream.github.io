@@ -19,35 +19,53 @@ const metadata = JSON.parse(
 
 test("browser policy identity and bytes are pinned", async () => {
   assert.equal(metadata.schema_version, 2);
+  assert.equal(metadata.release_id, "v9-rhe0p5-240000-catalog3");
   assert.equal(metadata.policy.schema_version, 1);
   assert.equal(metadata.policy.kind, "teacher");
-  assert.equal(metadata.policy.run_name, "ffw0p2_ft10k_ci20-60_wrp150-4_hpr150-3_jtl100_e12288_s1_v8");
-  assert.equal(metadata.policy.checkpoint_filename, "model_210500.pt");
-  assert.equal(metadata.policy.checkpoint_iteration, 210500);
+  assert.equal(metadata.policy.run_name, "rhe0p5_ft50k_ci20-60_wrp150-4_hpr150-3_fcs0p5_jtl100_e12288_s1_v9");
+  assert.equal(metadata.policy.checkpoint_filename, "model_240000.pt");
+  assert.equal(metadata.policy.checkpoint_iteration, 240000);
   assert.equal(
     metadata.policy.checkpoint_sha256,
-    "408e2f5176a72cdd98bd59e7724ab6f11233cb18e3a8dabf099d49585f7eb063",
+    "9a003c7022df8279b2ca92e93caf60f065626f3aa78b10ca2a1a725f5753aa36",
   );
-  assert.equal(metadata.policy.flat_foot_reward_weight, 0.2);
+  assert.equal(metadata.policy.lineage, "common v7 lineage resumed at iteration 150000");
+  assert.equal("seed_checkpoint_iteration" in metadata.policy, false);
+  assert.equal(metadata.policy.flat_foot_reward_weight, 0.175);
+  assert.equal(metadata.policy.rel_standing_envs, 0.4);
+  assert.equal(metadata.policy.rel_heading_envs, 0.5);
+  assert.equal(metadata.policy.rel_zero_vel_yaw_envs, 0.5);
   assert.equal(metadata.policy.onnx_opset, 11);
   const policy = await readFile(new URL("../public/assets/policy.onnx", import.meta.url));
   assert.equal(createHash("sha256").update(policy).digest("hex"), metadata.policy.onnx_sha256);
 });
 
+test("release identity is pinned through both webpage entry points", async () => {
+  const [demoHtml, projectHtml] = await Promise.all([
+    readFile(new URL("../index.html", import.meta.url), "utf8"),
+    readFile(new URL("../../index.html", import.meta.url), "utf8"),
+  ]);
+  assert.ok(
+    demoHtml.includes(`<meta name="htd-release-id" content="${metadata.release_id}" />`),
+  );
+  const versionedEntry = `./wbc_mujoco/dist/index.html?v=${metadata.release_id}`;
+  assert.equal(projectHtml.split(versionedEntry).length - 1, 2);
+});
+
 test("webpage presets are pinned independently from the bundled native policy", () => {
   const expectedPresets = [
-    ["forward", [0.5, 0, 0, 0.72, 0, 0, 0]],
-    ["backward", [-0.5, 0, 0, 0.72, 0, 0, 0]],
-    ["strafe_left", [0.1, 0.9, 0, 0.72, -0.1, 0.04, 0]],
-    ["turn_left", [0, 0, 1.5, 0.72, 0, 0, 0]],
-    ["squat_bow_walk", [1.2, 0.1, 0, 0.4, 0.1, 0.74, 0.2]],
-    ["twisted_walk", [0.45, 0.05, 0, 0.62, 0, 0.48, 1.1]],
-    ["side_lean_walk", [0.5, 0.35, 0, 0.47, 0.68, 0.24, -0.2]],
-    ["pitch_strafe", [0, 0.8, 0, 0.35, 0, 1, 0]],
-    ["forward_backbend", [0.7, 0, 0, 0.5, 0, -0.5, 0]],
-    ["backlook_reverse", [-0.7, -0.1, 0, 0.64, -0.1, -0.56, -2.4]],
-    ["spin_backbend", [0.25, -0.05, 1.5, 0.65, 0.4, -0.6, -1.4]],
-    ["tall_extension", [-0.3, 0, 0, 0.85, 0, -0.9, -0.25]],
+    ["forward", [0.6, 0, 0, 0.72, 0, 0, 0]],
+    ["backward", [-0.55, 0, 0, 0.72, 0, 0, 0]],
+    ["strafe_left", [0, 0.75, 0, 0.72, -0.1, 0.04, 0]],
+    ["turn_left", [0, 0, 1.25, 0.72, 0, 0, 0]],
+    ["squat_bow_walk", [1.3, -0.05, 0, 0.33, 0.05, 0.72, 0.25]],
+    ["twisted_walk", [0.35, 0.1, 0, 0.62, 0, 0.48, 1.1]],
+    ["side_lean_walk", [0.25, 0.15, 0, 0.49, 0.65, 0.28, -0.19]],
+    ["pitch_strafe", [0.15, 0.5, 0, 0.35, -0.03, 0.94, 0.03]],
+    ["forward_backbend", [0.55, 0, 0, 0.5, 0, -0.5, 0]],
+    ["backlook_reverse", [-0.45, -0.1, 0, 0.64, -0.1, -0.56, -2.4]],
+    ["spin_backbend", [0.25, -0.05, 1.2, 0.65, 0.4, -0.6, -1.4]],
+    ["tall_extension", [-0.25, 0, 0, 0.72, -0.05, -0.88, -0.1]],
   ];
   assert.equal(metadata.safe_presets.length, expectedPresets.length);
   const keys = new Set(metadata.safe_presets.map((preset) => preset.key));
@@ -60,6 +78,7 @@ test("webpage presets are pinned independently from the bundled native policy", 
     assert.ok(preset.command.every(Number.isFinite), preset.key);
     preset.command.forEach((value, index) => {
       const spec = metadata.commands[index];
+      assert.ok(value >= spec.min && value <= spec.max, `${preset.key}:${spec.key}:range`);
       const gridIndex = (value - spec.min) / spec.step;
       assert.ok(Math.abs(gridIndex - Math.round(gridIndex)) < 1e-8, `${preset.key}:${spec.key}`);
     });
