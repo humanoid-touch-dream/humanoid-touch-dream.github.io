@@ -68,6 +68,7 @@ export class HtdThreeRenderer {
     this.meshGeometryCache = new Map();
     this.lastPelvisPosition = new THREE.Vector3();
     this.currentPelvisPosition = new THREE.Vector3();
+    this.renderFrame = () => this.render();
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x0c1116);
@@ -117,7 +118,7 @@ export class HtdThreeRenderer {
     this.resizeObserver = new ResizeObserver(() => this.resize());
     this.resizeObserver.observe(container);
     this.resize();
-    this.renderer.setAnimationLoop(() => this.render());
+    this.setActive(true);
   }
 
   _createRobotVisuals() {
@@ -187,6 +188,14 @@ export class HtdThreeRenderer {
   render() {
     this.controls.update();
     this.renderer.render(this.scene, this.camera);
+  }
+
+  setActive(active) {
+    this.renderer.setAnimationLoop(active ? this.renderFrame : null);
+    if (active) {
+      this.resize();
+      this.render();
+    }
   }
 
   dispose() {

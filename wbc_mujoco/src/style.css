@@ -138,7 +138,7 @@ h1 { margin: 0; font-size: clamp(1.55rem, 3vw, 2rem); line-height: 1.05; letter-
 .slider-row label { color: #cbd2d8; font-size: 0.72rem; }
 .slider-row output { color: #fff; font-size: 0.72rem; text-align: right; font-variant-numeric: tabular-nums; }
 .slider-control { display: grid; min-width: 0; gap: 0.26rem; }
-input[type="range"] { width: 100%; height: 0.25rem; accent-color: var(--accent); cursor: pointer; }
+input[type="range"] { width: 100%; height: 1.5rem; margin: 0; accent-color: var(--accent); cursor: pointer; }
 .range-map { position: relative; height: 0.16rem; border-radius: 99px; background: rgba(255, 255, 255, 0.10); }
 .training-band { position: absolute; left: var(--training-left); width: var(--training-width); height: 100%; border-radius: inherit; background: var(--accent); box-shadow: 0 0 0.35rem rgba(101, 242, 197, 0.35); }
 .range-map.clipped-low::before,

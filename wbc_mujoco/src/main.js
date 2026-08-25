@@ -1,5 +1,6 @@
 import { HtdBrowserController } from "./controller.js";
 import { clampCommand, rangeBand } from "./contract.js";
+import { shouldIgnoreGlobalShortcut } from "./input.js";
 import { HtdThreeRenderer } from "./renderer.js";
 
 const elements = {
@@ -256,7 +257,7 @@ function runValidatedPreset(preset) {
 }
 
 function handleKeyboard(event) {
-  if (!controller || event.repeat) return;
+  if (!controller || shouldIgnoreGlobalShortcut(event)) return;
   const target = Float32Array.from(controller.commandTarget);
   const key = event.key.toLowerCase();
   const increments = {
@@ -289,6 +290,20 @@ function handleKeyboard(event) {
   activePreset = null;
   updatePresetHighlight();
   event.preventDefault();
+}
+
+function handleParentMessage(event) {
+  if (
+    window.parent === window
+    || event.source !== window.parent
+    || event.origin !== window.location.origin
+    || event.data?.type !== "htd-wbc:visibility"
+  ) {
+    return;
+  }
+  const visible = event.data.visible === true;
+  visualizer?.setActive(visible);
+  if (!visible && running) pauseSimulation();
 }
 
 async function boot() {
@@ -363,7 +378,9 @@ async function boot() {
     document.documentElement.dataset.htdWbcReady = "true";
     elements.loading.classList.add("hidden");
     window.dispatchEvent(new CustomEvent("htd-wbc:ready"));
-    if (window.parent !== window) window.parent.postMessage({ type: "htd-wbc:ready" }, "*");
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: "htd-wbc:ready" }, window.location.origin);
+    }
   } catch (error) {
     console.error(error);
     elements.loading.querySelector(".loader")?.remove();
@@ -381,6 +398,7 @@ elements.neutral.addEventListener("click", () => {
   startSimulation();
 });
 window.addEventListener("keydown", handleKeyboard);
+window.addEventListener("message", handleParentMessage);
 window.addEventListener("pagehide", () => {
   pauseSimulation(false);
   visualizer?.dispose();

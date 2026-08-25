@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "release_id": "v9-rhe0p5-240000-catalog3",
+  "release_id": "v9-rhe0p5-240000-catalog3-ui1",
   "source": "IsaacLab-Decoupled-WBC/sim2mujoco/htd_controller.py",
   "policy": {
     "schema_version": 1,
@@ -52,7 +52,7 @@
     {"key": "wz", "label": "Turn rate", "unit": "rad/s", "min": -2.57, "max": 2.57, "step": 0.01, "training": {"min": -1.57, "max": 1.57}},
     {"key": "height", "label": "Torso height", "unit": "m", "min": 0.3, "max": 0.9, "step": 0.01, "training": {"start_min": 0.5, "start_max": 0.8, "min": 0.35, "max": 0.8}},
     {"key": "roll", "label": "Torso roll", "unit": "rad", "min": -0.97, "max": 0.97, "step": 0.01, "training": {"start_min": -0.4, "start_max": 0.4, "min": -0.7, "max": 0.7}},
-    {"key": "pitch", "label": "Torso pitch", "unit": "rad", "min": -0.9, "max": 1.27, "step": 0.02, "training": {"start_min": -0.3, "start_max": 1.0, "min": -0.52, "max": 1.57}},
+    {"key": "pitch", "label": "Torso pitch", "unit": "rad", "min": -0.9, "max": 1.27, "step": 0.01, "training": {"start_min": -0.3, "start_max": 1.0, "min": -0.52, "max": 1.57}},
     {"key": "body_yaw", "label": "Torso yaw", "unit": "rad", "min": -3.17, "max": 3.17, "step": 0.01, "training": {"start_min": -0.65, "start_max": 0.65, "min": -1.57, "max": 1.57}}
   ],
   "safe_presets": [

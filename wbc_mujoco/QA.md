@@ -1,15 +1,19 @@
 # Local QA record
 
-Checked on 2026-08-23 with Google Chrome `151.0.7922.173`
-headless/SwiftShader.
+The policy/catalog screen was checked on 2026-08-23 with Google Chrome
+`151.0.7922.173` headless/SwiftShader.
+
+The interactive-input fixes were rechecked on 2026-08-25 with Google Chrome 152.
 
 ## Static, provenance, and integrity checks
 
-- `npm run check`: pass (13 JavaScript contract tests, native controller/model-asset
+- `npm run check`: pass (18 JavaScript contract tests, native controller/model-asset
   parity, and production Vite build)
 - `npm audit --omit=dev`: 0 vulnerabilities
-- interaction timing is separated by source: keyboard `0.00 s`, sliders `0.20 s`,
-  validated presets `2.00 s` after their one-second neutral settle
+- interaction timing is separated by source: keyboard commands apply on the next
+  control tick, sliders use a `0.20 s` full-range slew limit without restarting
+  during a drag, and validated presets retain their `2.00 s` smootherstep after a
+  one-second neutral settle
 - every preset command is inside the play limits, lies exactly on its slider grid,
   and only `turn_left` and `spin_backbend` request nonzero turn rate
 - checkpoint training ranges and curriculum starts match the portable v7 range
@@ -26,7 +30,7 @@ headless/SwiftShader.
   initializers are bit-exact with the checkpoint
 - the browser fetches the ONNX bytes, verifies their full SHA-256, and only then
   creates the ONNX Runtime session; a deliberately tampered policy was rejected
-- release `v9-rhe0p5-240000-catalog3` is pinned through the outer page, demo entry
+- release `v9-rhe0p5-240000-catalog3-ui1` is pinned through the outer page, demo entry
   point, contract request, runtime probe, and policy-hash request; a deliberately
   stale warm-cache contract was rejected before any policy fetch rather than being
   mixed with the new release
@@ -39,6 +43,22 @@ The v9 moving-command population uses 40% standing environments. Of the remainin
 60%, 30% use heading feedback, 15% use a direct exact-zero turn rate, and 15% use a
 direct uniformly sampled turn rate.
 
+## Interactive control regression
+
+- a 30-event continuous slider drag produced 23 control ticks while the pointer was
+  moving, and the applied command advanced on all 23; the first change arrived on the
+  next control tick (`20.8 ms` in that run)
+- a neutral-to-maximum forward command advanced by the bounded sequence
+  `0.3, 0.6, 0.9, 1.2, 1.5` and reached the target in five ticks; a direction reversal
+  remained bounded to the same `0.3` per-tick limit
+- the `+1.27 rad` torso-pitch endpoint is reachable, focused buttons retain native
+  Space-key activation, and `Ctrl+R` retains browser reload behavior
+- launching the embedded demo transfers keyboard focus into it; hiding it pauses both
+  simulation and rendering, while showing it restores rendering without unexpectedly
+  resuming physics
+- all seven slider hit areas are `24 px` tall at desktop and mobile widths, with no
+  horizontal overflow at `390 px`
+
 ## Runtime parity probe
 
 - browser MuJoCo runtime: 3.3.8
@@ -48,8 +68,8 @@ direct uniformly sampled turn rate.
   maximum absolute difference `9.536743e-7` (mean `2.389153e-7`)
 - production build loaded the versioned contract and exact policy, rendered the
   robot, initialized ONNX Runtime, and completed every query-driven QA replay with
-  no application console, runtime, or browser-log errors; Chrome emitted only its
-  non-fatal SwiftShader deprecation warning
+  no application console, runtime, or browser-log errors; Chrome emitted only
+  non-fatal headless graphics/deprecation warnings
 
 The one-patch MuJoCo engine difference is intentional and documented; it is why the
 browser stability screen below is separate from native validation.
@@ -113,6 +133,6 @@ backward/back-extension checks (heading `2.70 / 10.52 deg`; path-angle error
 Isaac Sim or hardware validation.
 
 The local-only QA hook is
-`?qaPreset=<preset-key>&qaTicks=400&v=v9-rhe0p5-240000-catalog3`; it writes release,
+`?qaPreset=<preset-key>&qaTicks=400&v=v9-rhe0p5-240000-catalog3-ui1`; it writes release,
 policy, initial-probe, and final-replay data to the hidden `#runtime-probe` element
 for automation.

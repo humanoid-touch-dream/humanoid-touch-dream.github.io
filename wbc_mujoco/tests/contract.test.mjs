@@ -12,14 +12,24 @@ import {
   smootherstep,
   updateArmTargets,
 } from "../src/contract.js";
+import { shouldIgnoreGlobalShortcut } from "../src/input.js";
 
 const metadata = JSON.parse(
   await readFile(new URL("../public/assets/contract.json", import.meta.url), "utf8"),
 );
 
+function makeCommandController() {
+  const controller = Object.create(HtdBrowserController.prototype);
+  controller.metadata = metadata;
+  controller.command = Float32Array.from(metadata.neutral_command);
+  controller.commandTarget = Float32Array.from(metadata.neutral_command);
+  controller.commandPlan = null;
+  return controller;
+}
+
 test("browser policy identity and bytes are pinned", async () => {
   assert.equal(metadata.schema_version, 2);
-  assert.equal(metadata.release_id, "v9-rhe0p5-240000-catalog3");
+  assert.equal(metadata.release_id, "v9-rhe0p5-240000-catalog3-ui1");
   assert.equal(metadata.policy.schema_version, 1);
   assert.equal(metadata.policy.kind, "teacher");
   assert.equal(metadata.policy.run_name, "rhe0p5_ft50k_ci20-60_wrp150-4_hpr150-3_fcs0p5_jtl100_e12288_s1_v9");
@@ -55,6 +65,10 @@ test("release identity is pinned while public demo URLs stay clean", async () =>
   assert.ok(projectHtml.includes(`<a class="wbc-live-open" href="${cleanEntry}"`));
   assert.ok(projectHtml.includes(`data-src="${versionedEntry}"`));
   assert.equal(projectHtml.split(versionedEntry).length - 1, 1);
+  assert.ok(demoHtml.includes("<summary>Keyboard control</summary>"));
+  assert.ok(!demoHtml.includes("Keyboard &amp; safety"));
+  assert.ok(projectHtml.includes("{ type: 'htd-wbc:visibility', visible: visible }"));
+  assert.ok(projectHtml.includes("frame.contentWindow.focus()"));
 });
 
 test("the legacy dist entry redirects to live without dropping query or hash", async () => {
@@ -126,11 +140,8 @@ test("interactive input timing is separate from validated presets", () => {
   assert.equal(smootherstep(0.5), 0.5);
 });
 
-test("keyboard commands apply on the next tick while sliders retain a short ramp", () => {
-  const controller = Object.create(HtdBrowserController.prototype);
-  controller.metadata = metadata;
-  controller.command = Float32Array.from(metadata.neutral_command);
-  controller.commandTarget = Float32Array.from(metadata.neutral_command);
+test("keyboard commands apply on the next tick while sliders use a bounded slew", () => {
+  const controller = makeCommandController();
 
   const keyboardTarget = Float32Array.from(metadata.neutral_command);
   keyboardTarget[0] = 0.1;
@@ -140,10 +151,90 @@ test("keyboard commands apply on the next tick while sliders retain a short ramp
   assert.equal(controller.commandPlan, null);
 
   const sliderTarget = Float32Array.from(metadata.neutral_command);
+  sliderTarget[0] = metadata.commands[0].max;
   controller.setManualTarget(sliderTarget);
   assert.equal(controller.commandPlan.ramp, 0.2);
+  controller._advanceCommandPlan();
+  assert.ok(controller.command[0] > 0);
+  assert.ok(controller.command[0] < sliderTarget[0]);
+});
+
+test("continuous slider input cannot restart or starve manual slew", () => {
+  const controller = makeCommandController();
+  const spec = metadata.commands[0];
+  controller.command[0] = spec.min;
+  controller.commandTarget[0] = spec.min;
+
+  const target = Float32Array.from(metadata.neutral_command);
+  target[0] = spec.max;
+  const maxStep = (spec.max - spec.min) * metadata.control_dt / metadata.slider_command_ramp_s;
+  let plan;
+
+  for (let tick = 0; tick < 10; tick++) {
+    const dragFraction = Math.min(1, (tick + 1) * 0.15);
+    target[0] = spec.min + dragFraction * (spec.max - spec.min);
+    controller.setManualTarget(target);
+    controller.setManualTarget(target);
+    if (!plan) plan = controller.commandPlan;
+    else assert.strictEqual(controller.commandPlan, plan);
+
+    const before = controller.command[0];
+    controller._advanceCommandPlan();
+    const advance = controller.command[0] - before;
+    assert.ok(advance > 0);
+    assert.ok(advance <= maxStep + 1e-6);
+  }
+
+  assert.ok(Math.abs(controller.command[0] - spec.max) < 1e-6);
+  assert.equal(controller.commandPlan, null);
+});
+
+test("manual slider retargeting remains bounded through a reversal", () => {
+  const controller = makeCommandController();
+  const spec = metadata.commands[0];
+  const target = Float32Array.from(metadata.neutral_command);
+  const maxStep = (spec.max - spec.min) * metadata.control_dt / metadata.slider_command_ramp_s;
+
+  target[0] = spec.max;
+  controller.setManualTarget(target);
+  const plan = controller.commandPlan;
+  controller._advanceCommandPlan();
+  const before = controller.command[0];
+
+  target[0] = spec.min;
+  controller.setManualTarget(target);
+  assert.strictEqual(controller.commandPlan, plan);
+  controller._advanceCommandPlan();
+  assert.ok(controller.command[0] < before);
+  assert.ok(before - controller.command[0] <= maxStep + 1e-6);
+});
+
+test("preset commands retain their settle and smootherstep trajectory", () => {
+  const controller = makeCommandController();
+  const target = Float32Array.from(metadata.neutral_command);
+  target[0] = 1;
+  controller.commandPlan = {
+    kind: "preset",
+    elapsed: 0,
+    start: Float32Array.from(metadata.neutral_command),
+    target,
+    settle: 0,
+    ramp: 0.2,
+  };
   for (let tick = 0; tick < 6; tick++) controller._advanceCommandPlan();
-  assert.ok(Math.abs(controller.command[0] - 0.05) < 1e-6);
+  assert.ok(Math.abs(controller.command[0] - 0.5) < 1e-6);
+});
+
+test("global robot shortcuts preserve browser and focused-control behavior", () => {
+  const pageTarget = { closest: () => null };
+  const focusedButton = { closest: () => ({ tagName: "BUTTON" }) };
+  assert.equal(shouldIgnoreGlobalShortcut({ target: pageTarget }), false);
+  assert.equal(shouldIgnoreGlobalShortcut({ target: pageTarget, ctrlKey: true }), true);
+  assert.equal(shouldIgnoreGlobalShortcut({ target: pageTarget, metaKey: true }), true);
+  assert.equal(shouldIgnoreGlobalShortcut({ target: pageTarget, altKey: true }), true);
+  assert.equal(shouldIgnoreGlobalShortcut({ target: pageTarget, isComposing: true }), true);
+  assert.equal(shouldIgnoreGlobalShortcut({ target: pageTarget, repeat: true }), true);
+  assert.equal(shouldIgnoreGlobalShortcut({ target: focusedButton }), true);
 });
 
 test("command clamp uses the Isaac play limits", () => {
@@ -156,6 +247,8 @@ test("every slider grid contains the neutral command exactly", () => {
   metadata.commands.forEach((spec, index) => {
     const gridIndex = (metadata.neutral_command[index] - spec.min) / spec.step;
     assert.ok(Math.abs(gridIndex - Math.round(gridIndex)) < 1e-9, spec.key);
+    const endpointSteps = (spec.max - spec.min) / spec.step;
+    assert.ok(Math.abs(endpointSteps - Math.round(endpointSteps)) < 1e-9, `${spec.key}:max`);
   });
 });
 

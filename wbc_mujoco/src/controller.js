@@ -268,19 +268,39 @@ export class HtdBrowserController {
     }
     const clamped = clampCommand(target, this.metadata);
     this.commandTarget.set(clamped);
-    this.commandPlan = {
-      kind: "manual",
-      elapsed: 0,
-      start: Float32Array.from(this.command),
-      target: clamped,
-      settle: 0,
-      ramp: rampSeconds,
-    };
+    if (this.commandPlan?.kind === "manual") {
+      this.commandPlan.target.set(clamped);
+      this.commandPlan.ramp = rampSeconds;
+    } else {
+      this.commandPlan = {
+        kind: "manual",
+        target: clamped,
+        ramp: rampSeconds,
+      };
+    }
   }
 
   _advanceCommandPlan() {
     if (!this.commandPlan) return;
     const plan = this.commandPlan;
+    if (plan.kind === "manual") {
+      let reachedTarget = true;
+      for (let axis = 0; axis < this.command.length; axis++) {
+        const delta = plan.target[axis] - this.command[axis];
+        const spec = this.metadata.commands[axis];
+        const maxStep = plan.ramp > 0
+          ? (spec.max - spec.min) * this.metadata.control_dt / plan.ramp
+          : Number.POSITIVE_INFINITY;
+        if (Math.abs(delta) <= maxStep + 1e-6) {
+          this.command[axis] = plan.target[axis];
+        } else {
+          this.command[axis] += Math.sign(delta) * maxStep;
+          reachedTarget = false;
+        }
+      }
+      if (reachedTarget) this.commandPlan = null;
+      return;
+    }
     let phase = 0;
     if (plan.elapsed >= plan.settle) {
       phase = plan.ramp > 0 ? smootherstep((plan.elapsed - plan.settle) / plan.ramp) : 1;

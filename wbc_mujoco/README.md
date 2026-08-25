@@ -49,8 +49,10 @@ has been trained.
 - coupled, rate-limited arms from the native exported fit
 - validated preset buttons reset, settle at neutral for one second, then use a
   two-second smootherstep transition
-- keyboard steps are applied on the next 50 Hz control tick; slider changes use
-  a short 0.20-second transition to avoid abrupt large command jumps
+- keyboard steps are applied on the next 50 Hz control tick; slider commands use
+  a per-tick slew limit, so dragging continuously updates the policy without
+  restarting the transition; a full-range change takes ten control ticks
+  (nominally `0.20 s`)
 - play-limit sliders with checkpoint training envelopes shown as teal bands
 
 The named catalog passed native MuJoCo stability/semantic screening and an
