@@ -40,7 +40,7 @@ test("browser policy identity and bytes are pinned", async () => {
   assert.equal(createHash("sha256").update(policy).digest("hex"), metadata.policy.onnx_sha256);
 });
 
-test("release identity is pinned through both webpage entry points", async () => {
+test("release identity is pinned while public demo URLs stay clean", async () => {
   const [demoHtml, projectHtml] = await Promise.all([
     readFile(new URL("../index.html", import.meta.url), "utf8"),
     readFile(new URL("../../index.html", import.meta.url), "utf8"),
@@ -48,8 +48,21 @@ test("release identity is pinned through both webpage entry points", async () =>
   assert.ok(
     demoHtml.includes(`<meta name="htd-release-id" content="${metadata.release_id}" />`),
   );
-  const versionedEntry = `./wbc_mujoco/dist/index.html?v=${metadata.release_id}`;
-  assert.equal(projectHtml.split(versionedEntry).length - 1, 2);
+  const cleanEntry = "./wbc_mujoco/live/";
+  const versionedEntry = `${cleanEntry}?v=${metadata.release_id}`;
+  assert.equal(projectHtml.split(`href="${cleanEntry}"`).length - 1, 2);
+  assert.ok(projectHtml.includes("<span>WBC Demo</span>"));
+  assert.ok(projectHtml.includes(`<a class="wbc-live-open" href="${cleanEntry}"`));
+  assert.ok(projectHtml.includes(`data-src="${versionedEntry}"`));
+  assert.equal(projectHtml.split(versionedEntry).length - 1, 1);
+});
+
+test("the legacy dist entry redirects to live without dropping query or hash", async () => {
+  const legacyHtml = await readFile(new URL("../dist/index.html", import.meta.url), "utf8");
+  assert.ok(legacyHtml.includes('new URL("../live/", window.location.href)'));
+  assert.ok(legacyHtml.includes("target.search = window.location.search"));
+  assert.ok(legacyHtml.includes("target.hash = window.location.hash"));
+  assert.ok(legacyHtml.includes("window.location.replace(target.href)"));
 });
 
 test("webpage presets are pinned independently from the bundled native policy", () => {

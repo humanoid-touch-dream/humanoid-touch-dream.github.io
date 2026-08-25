@@ -18,7 +18,7 @@ relative URLs and can later be embedded in the HTD project page as a static ifra
 In the full HTD workspace, `npm run check` also compares the browser contract and
 copied robot assets against the sibling `IsaacLab-Decoupled-WBC/sim2mujoco` tree,
 checks the independent webpage policy against its declared hash, then produces the local
-`dist/` build. A standalone website checkout can use `npm test && npm run build`
+`live/` build. A standalone website checkout can use `npm test && npm run build`
 without that sibling parity source.
 
 ## Parity contract

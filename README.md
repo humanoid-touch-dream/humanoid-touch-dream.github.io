@@ -22,7 +22,7 @@ python3 -m http.server 8000
 ```
 
 Open `http://127.0.0.1:8000/` and select **Launch interactive demo** in the
-Whole-Body Controller section. The generated `wbc_mujoco/dist/` directory is
+Whole-Body Controller section. The generated `wbc_mujoco/live/` directory is
 the production bundle published with this site. Rebuild it whenever the browser
 demo source or assets change.
 
