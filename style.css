@@ -146,6 +146,18 @@ img {
   box-sizing: border-box; 
 }
 
+.publication-links .icon img {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.publication-links .huggingface-icon {
+  filter: grayscale(1) brightness(1.5);
+}
+
 /* Override for images directly within .main-content that need to align */
 .main-content > img {
   margin-left: 0;
